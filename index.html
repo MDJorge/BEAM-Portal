@@ -405,16 +405,15 @@
             html += `<tr><td class="doc-name">${name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
         });
         html += `</table>`;
-        // BUTTON IS NOW INSIDE THE DOCUMENT BOX AT THE BOTTOM
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-dark">${t.btnUploads}</a>`;
         html += `</div>`;
 
-        // --- TRANSPORTATION SECTION (NOW BELOW UPLOADS) ---
+        // --- TRANSPORTATION SECTION ---
         if (s.program === "Discovery" && s.transportation) {
             const loc = (s.transportation.location || "").toLowerCase();
             const isUptown = loc.includes("uptown");
             const campAddr = isUptown ? "Comp Sci High, South Bronx" : "New Design High, Lower East Side";
-            const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRSgQ";
+            const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
             const mStop = s.transportation.morning || "Missing";
             const aStop = s.transportation.afternoon || "Missing";
             const hasSub = (mStop !== "Missing" && mStop !== "") && (aStop !== "Missing" && aStop !== "");
