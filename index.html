@@ -19,18 +19,16 @@
     
     /* Section Styling */
     .section-box { border-radius: 8px; padding: 15px; margin-bottom: 15px; border-inline-start: 5px solid #ccc; background: #fff; }
-    
-    /* Colors */
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
     .section-extra { border-inline-start-color: #6f42c1; background: #f8f5ff; } 
-    .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } /* Matches Orange Button */
-    .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } /* New Teal/Cyan Color */
+    .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } /* Match Orange Theme */
+    .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } /* Teal Theme */
 
     .section-title { font-weight: bold; color: #555; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-action { margin-top: 10px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
     
     .table td { padding: 10px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
-    .item-name { color: #444; font-size: 0.95rem; }
+    .doc-name { color: #444; font-size: 0.95rem; }
     .doc-link { text-decoration: none; color: #004a99; font-weight: 500; border-bottom: 1px dotted #004a99; }
     
     .timestamp { color: #777; font-size: 0.85rem; }
@@ -229,36 +227,36 @@
         html += `<p class="timestamp text-center mb-3">${t.timestamp}: ${dateStr}</p>`;
         html += `<div class="warning-banner">⚠️ <strong>${t.warning24h}</strong></div>`;
 
-        // 1. REGISTRATION FORMS
+        // 1. REGISTRATION FORMS (REVERTED STYLE)
         html += `<div class="section-box section-forms">
                   <div class="section-title">${t.sectForms}</div>
                   <table class="table table-sm mb-0">
-                    <tr><td class="item-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr>
+                    <tr><td class="doc-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr>
                   </table>`;
         if (missingConsents > 0) html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100">${t.btnForms}</a>`;
         html += `</div>`;
 
-        // 2. EXTRA
+        // 2. EXTRA (REVERTED STYLE)
         if (extraData.length > 0) {
           html += `<div class="section-box section-extra"><div class="section-title">${t.sectExtra}</div><table class="table table-sm mb-0">`;
           extraData.forEach(d => {
-              html += `<tr><td class="item-name">${d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
+              html += `<tr><td class="doc-name">${d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
           });
           html += `</table>`;
           if (missingExtra > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
           html += `</div>`;
         }
 
-        // 3. DOCUMENT UPLOADS
+        // 3. DOCUMENT UPLOADS (ORANGE THEME KEPT)
         html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
         documentData.forEach(d => {
-            html += `<tr><td class="item-name">${d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
+            html += `<tr><td class="doc-name">${d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
         });
         html += `</table>`;
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 text-dark" style="background-color: #fd7e14; border: none; color: white !important;">${t.btnUploads}</a>`;
         html += `</div>`;
 
-        // 4. TRANSPORTATION
+        // 4. TRANSPORTATION (TEAL THEME + ROW LOGIC)
         if (s.program === "Discovery" && s.transportation) {
             const isUptown = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
@@ -269,8 +267,8 @@
             html += `<div class="section-box section-transpo">
                       <div class="section-title">${t.sectTrans}</div>
                       <table class="table table-sm mb-0">
-                        <tr><td class="item-name">${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? t.missing : mStop}</td></tr>
-                        <tr><td class="item-name">${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? t.missing : aStop}</td></tr>
+                        <tr><td class="doc-name">${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? t.missing : mStop}</td></tr>
+                        <tr><td class="doc-name">${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? t.missing : aStop}</td></tr>
                       </table>
                       <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100" style="background-color: #0dcaf0; border: none; color: white !important;">${hasSub ? t.change : t.complete}</a>
                       <div class="mt-2 text-muted text-center" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div>
