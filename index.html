@@ -35,6 +35,9 @@
     /* New Warning Banner */
     .warning-banner { color: #dc3545; background: #fff5f5; border: 1px dashed #dc3545; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
 
+    /* Transportation Box Styling */
+    .transpo-section { border-left: 5px solid #ffc107; background: #fff9e6; margin-bottom: 15px; padding: 15px; border-radius: 8px; }
+
     /* Arabic RTL Support */
     body[dir="rtl"] { text-align: right; }
     body[dir="rtl"] .text-end { text-align: left !important; }
@@ -92,10 +95,8 @@
   </div>
 
   <script>
-    // ⬇️ YOUR SCRIPT URL ⬇️
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
 
-    // --- TRANSLATION DATABASE ---
     const TRANSLATIONS = {
       en: {
         title: "BEAM Student Portal",
@@ -122,6 +123,14 @@
         notSubmitted: "Not Submitted",
         warning24h: "New uploads may take 24 hours to show as submitted.",
         multipleSub: "You can submit multiple times if needed.",
+        transportation: "Transportation",
+        camp: "Camp Location",
+        am: "Morning",
+        pm: "Afternoon",
+        change: "Change Stop",
+        complete: "Complete Survey",
+        viewStops: "View All Options",
+        warningTranspo: "Changes take 24 hours to update.",
         docs: {
           "Parent Med": "Parent Medical Release",
           "Phys Med": "Physician's Medical Release",
@@ -157,6 +166,14 @@
         notSubmitted: "No Enviado",
         warning24h: "Las nuevas cargas pueden tardar 24 horas en mostrarse como enviadas.",
         multipleSub: "Puede enviar varias veces si es necesario.",
+        transportation: "Transporte",
+        camp: "Ubicación del campamento",
+        am: "Mañana",
+        pm: "Tarde",
+        change: "Cambiar parada",
+        complete: "Completar encuesta",
+        viewStops: "Ver todas las opciones",
+        warningTranspo: "Los cambios tardan 24 horas en actualizarse.",
         docs: {
           "Parent Med": "Autorización Médica de Padres",
           "Phys Med": "Autorización Médica del Médico",
@@ -192,6 +209,14 @@
         notSubmitted: "未提交",
         warning24h: "新上传的文件可能需要 24 小时才能显示为已提交。",
         multipleSub: "如有需要，您可以多次提交。",
+        transportation: "交通",
+        camp: "营地位置",
+        am: "早上",
+        pm: "下午",
+        change: "更改站点",
+        complete: "完成调查",
+        viewStops: "查看所有选项",
+        warningTranspo: "更改需要 24 小时才能更新。",
         docs: {
           "Parent Med": "家长医疗授权书",
           "Phys Med": "医生医疗授权书",
@@ -227,6 +252,14 @@
         notSubmitted: "لم يتم الإرسال",
         warning24h: "قد تستغرق التحميلات الجديدة 24 ساعة لتظهر كمرسلة.",
         multipleSub: "يمكنك الإرسال عدة مرات إذا لزم الأمر.",
+        transportation: "نقل",
+        camp: "موقع المعسكر",
+        am: "صباحاً",
+        pm: "مساءً",
+        change: "تغيير المحطة",
+        complete: "أكمل الاستبيان",
+        viewStops: "عرض جميع الخيارات",
+        warningTranspo: "تستغرق التغييرات 24 ساعة للتحديث.",
         docs: {
           "Parent Med": "الإفراج الطبي من الوالدين",
           "Phys Med": "الإفراج الطبي من الطبيب",
@@ -240,7 +273,7 @@
     };
 
     let currentLang = 'en';
-    let currentResults = null; // Store results to re-render on lang change
+    let currentResults = null;
 
     function syncLang(el) {
       document.getElementById('langSelect').value = el.value;
@@ -251,11 +284,8 @@
     function changeLanguage() {
       currentLang = document.getElementById('langSelect').value;
       const t = TRANSLATIONS[currentLang];
-      
-      // RTL Support for Arabic
       document.body.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
 
-      // Update Static Labels
       document.getElementById('t-title').innerText = t.title;
       document.getElementById('t-res-title').innerText = t.title;
       document.getElementById('t-subtitle').innerText = t.subtitle;
@@ -264,7 +294,14 @@
       document.getElementById('btn').innerText = t.btnCheck;
       document.getElementById('t-back').innerText = t.btnBack;
 
-      // Re-render results if they exist
+      // Update transportation labels dynamically if they exist
+      document.querySelectorAll('.label-transpo').forEach(el => el.innerText = t.transportation);
+      document.querySelectorAll('.label-camp').forEach(el => el.innerText = t.camp);
+      document.querySelectorAll('.label-am').forEach(el => el.innerText = t.am);
+      document.querySelectorAll('.label-pm').forEach(el => el.innerText = t.pm);
+      document.querySelectorAll('.label-warning-trans').forEach(el => el.innerText = t.warningTranspo);
+      document.querySelectorAll('.label-view-stops').forEach(el => el.innerText = t.viewStops);
+
       if (currentResults) render(currentResults);
     }
 
@@ -284,14 +321,6 @@
       render(results);
     };
 
-    function manualFallback() {
-      const dob = document.getElementById('dob').value;
-      const email = document.getElementById('email').value;
-      const target = `${SCRIPT_URL}?dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
-      const chooserUrl = `https://accounts.google.com/AccountChooser?continue=${encodeURIComponent(target)}`;
-      window.open(chooserUrl, '_blank');
-    }
-
     function runSearch() {
       const dob = document.getElementById('dob').value;
       const email = document.getElementById('email').value;
@@ -305,9 +334,6 @@
       btn.innerText = t.btnSearching;
       errBox.classList.add('hidden');
 
-      const oldScript = document.getElementById('jsonp_loader');
-      if(oldScript) oldScript.remove();
-
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
       script.setAttribute('crossorigin', 'anonymous');
@@ -316,10 +342,9 @@
       script.onerror = function() {
         btn.disabled = false;
         btn.innerText = t.btnCheck;
-        errBox.innerHTML = `<strong>${t.errorConn}</strong><br><button onclick="manualFallback()" class="btn btn-dark btn-sm fw-bold w-100 mt-2">${t.manualBtn}</button>`;
+        errBox.innerHTML = `<strong>${t.errorConn}</strong>`;
         errBox.classList.remove('hidden');
       };
-
       document.body.appendChild(script);
     }
 
@@ -331,8 +356,6 @@
       if (!results || results.length === 0) {
         document.getElementById('error').innerHTML = t.errorNoStudent;
         document.getElementById('error').classList.remove('hidden');
-        document.getElementById('error').classList.remove('alert-warning');
-        document.getElementById('error').classList.add('text-danger');
         return;
       }
 
@@ -341,7 +364,6 @@
       let html = '';
 
       results.forEach(s => {
-        // Grouping the items
         const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
         const extraItems = ["Meningitis"]; 
         
@@ -355,81 +377,82 @@
 
         const consentGroupStatus = missingConsents === 0 ? t.submitted : t.notSubmitted;
         const consentGroupClass = missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted";
-
         const isFullyComplete = (missingConsents === 0 && missingExtra === 0 && missingDocs === 0);
 
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
 
-        if (isFullyComplete) {
-           html += `<div class="success-banner">${t.success}</div>`;
-        }
-
+        if (isFullyComplete) html += `<div class="success-banner">${t.success}</div>`;
         html += `<p class="timestamp text-center">${t.timestamp}: ${dateStr}</p>`;
 
-        // NEW: 24 Hour Warning Disclaimer
         html += `<div class="warning-banner">
                    ⚠️ <strong>${t.warning24h}</strong><br>
                    <span style="color: #666; font-size: 0.85rem;">${t.multipleSub}</span>
                  </div>`;
 
-        // SECTION 1: CONSENT FORMS
-        html += `<div class="section-box section-forms">`;
-        html += `<div class="section-title">${t.sectForms}</div>`;
-        html += `<table class="table table-sm mb-0">`;
-        html += `<tr>
-                   <td class="doc-name">${t.groupedForms}</td>
-                   <td class="${consentGroupClass} text-end">${consentGroupStatus}</td>
-                 </tr>`;
-        html += `</table>`;
-        if (missingConsents > 0) {
-           html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100 mt-2">${t.btnForms}</a>`;
-        }
+        // SECTION 1: FORMS
+        html += `<div class="section-box section-forms">
+                  <div class="section-title">${t.sectForms}</div>
+                  <table class="table table-sm mb-0">
+                    <tr><td class="doc-name">${t.groupedForms}</td><td class="${consentGroupClass} text-end">${consentGroupStatus}</td></tr>
+                  </table>`;
+        if (missingConsents > 0) html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100 mt-2">${t.btnForms}</a>`;
         html += `</div>`;
 
-        // SECTION 2: ADDITIONAL ACKNOWLEDGEMENTS 
+        // SECTION 2: EXTRA
         if (extraData.length > 0) {
-          html += `<div class="section-box section-extra">`;
-          html += `<div class="section-title">${t.sectExtra}</div>`;
-          html += `<table class="table table-sm mb-0">`;
+          html += `<div class="section-box section-extra"><div class="section-title">${t.sectExtra}</div><table class="table table-sm mb-0">`;
           extraData.forEach(d => {
-              let displayName = t.docs[d.name] || d.name;
               const statusClass = d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted';
-              const statusText = d.status === 'Submitted' ? t.submitted : t.notSubmitted;
-              html += `<tr><td class="doc-name">${displayName}</td><td class="${statusClass} text-end">${statusText}</td></tr>`;
+              html += `<tr><td class="doc-name">${t.docs[d.name] || d.name}</td><td class="${statusClass} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
           });
           html += `</table>`;
-          if (missingExtra > 0) {
-             html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
-          }
+          if (missingExtra > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
           html += `</div>`;
         }
 
         // SECTION 3: DOCUMENTS
-        html += `<div class="section-box section-uploads">`;
-        html += `<div class="section-title">${t.sectUploads}</div>`;
-        html += `<table class="table table-sm mb-0">`;
-        
+        html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
         documentData.forEach(d => {
-            let displayName = t.docs[d.name] || d.name; // Translate doc name
-            const statusClass = d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted';
-            const statusText = d.status === 'Submitted' ? t.submitted : t.notSubmitted; // Translate status
-
-            // Hyperlinks
-            if (d.name === "Parent Med") {
-              displayName = `<a href="https://drive.google.com/file/d/1_wGr6RFSioXv70VeNOmugD0iUdQdIzJ6/view?usp=drive_link" target="_blank" class="doc-link">${displayName}</a>`;
-            } else if (d.name === "Phys Med") {
-              displayName = `<a href="https://drive.google.com/file/d/1NjZ0nRDhwQ4Sf_rYmunnjUnNG5rRHPRD/view?usp=drive_link" target="_blank" class="doc-link">${displayName}</a>`;
-            }
-          
-            html += `<tr><td class="doc-name">${displayName}</td><td class="${statusClass} text-end">${statusText}</td></tr>`;
+            let name = t.docs[d.name] || d.name;
+            if (d.name === "Parent Med") name = `<a href="https://drive.google.com/file/d/1_wGr6RFSioXv70VeNOmugD0iUdQdIzJ6/view" target="_blank" class="doc-link">${name}</a>`;
+            if (d.name === "Phys Med") name = `<a href="https://drive.google.com/file/d/1NjZ0nRDhwQ4Sf_rYmunnjUnNG5rRHPRD/view" target="_blank" class="doc-link">${name}</a>`;
+            html += `<tr><td class="doc-name">${name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
         });
-        html += `</table>`;
+        html += `</table></div>`;
 
-        if (missingDocs > 0) {
-           html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-dark">${t.btnUploads}</a>`;
+        // --- TRANSPORTATION SECTION ---
+        if (s.program === "Discovery" && s.transportation) {
+            const loc = (s.transportation.location || "").toLowerCase();
+            const isUptown = loc.includes("uptown");
+            const campAddr = isUptown ? "Comp Sci High, South Bronx" : "New Design High, Lower East Side";
+            const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRSgQ";
+            const mStop = s.transportation.morning || "Missing";
+            const aStop = s.transportation.afternoon || "Missing";
+            const hasSub = (mStop !== "Missing" && mStop !== "") && (aStop !== "Missing" && aStop !== "");
+
+            html += `<div class="transpo-section">
+                      <h6 class="fw-bold label-transpo">${t.transportation}</h6>
+                      <p class="small mb-2"><strong class="label-camp">${t.camp}</strong>: ${campAddr}</p>
+                      <div class="row mb-3">
+                        <div class="col-6 small"><strong class="label-am">${t.am}</strong>:<br>${mStop}</div>
+                        <div class="col-6 small"><strong class="label-pm">${t.pm}</strong>:<br>${aStop}</div>
+                      </div>
+                      <div class="d-grid gap-2">
+                        <a href="${surveyUrl}" target="_blank" class="btn btn-sm ${hasSub ? 'btn-outline-primary' : 'btn-primary'}">${hasSub ? t.change : t.complete}</a>
+                        <button class="btn btn-sm btn-link text-decoration-none p-0 text-start label-view-stops" onclick="this.nextElementSibling.classList.toggle('hidden')">${t.viewStops}</button>
+                        <div class="hidden mt-2 small border-top pt-2">
+                          <table class="table table-borderless table-sm mb-0" style="font-size: 0.75rem;">
+                            <tr><td><strong>Prospect Park (B/Q):</strong></td><td>8:20 AM @ Lincoln Market (33 Lincoln Rd)</td></tr>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="mt-2 text-muted label-warning-trans" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div>
+                    </div>`;
         }
-        html += `</div><hr class="my-4">`;
+
+        if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-dark">${t.btnUploads}</a>`;
+        html += `<hr class="my-4">`;
       });
 
       document.getElementById('content').innerHTML = html;
