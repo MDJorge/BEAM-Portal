@@ -12,25 +12,28 @@
     .card-header { background: #004a99; color: white; padding: 20px; border-radius: 12px 12px 0 0; position: relative; }
     .lang-toggle { position: absolute; top: 15px; right: 15px; }
     .form-select-sm { background-color: rgba(255,255,255,0.9); border: none; font-weight: bold; color: #004a99; cursor: pointer; }
-    .status-Submitted { color: #198754 !important; font-weight: bold; }
-    .status-Not-Submitted { color: #dc3545 !important; font-weight: bold; }
     
-    /* Shared Section Styling */
+    /* Status Styling */
+    .status-Submitted { color: #198754 !important; font-weight: bold; }
+    .status-Not-Submitted, .status-Missing { color: #dc3545 !important; font-weight: bold; }
+    
+    /* Section Styling */
     .section-box { border-radius: 8px; padding: 15px; margin-bottom: 15px; border-inline-start: 5px solid #ccc; background: #fff; }
+    
+    /* Colors */
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
     .section-extra { border-inline-start-color: #6f42c1; background: #f8f5ff; } 
-    .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } 
-    .section-transpo { border-inline-start-color: #ffc107; background: #fffdf5; } /* New standardized transpo style */
+    .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } /* Matches Orange Button */
+    .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } /* New Teal/Cyan Color */
 
     .section-title { font-weight: bold; color: #555; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    .btn-action { margin-top: 5px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
+    .btn-action { margin-top: 10px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
     
     .table td { padding: 10px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
-    .doc-name { color: #444; font-size: 0.95rem; }
+    .item-name { color: #444; font-size: 0.95rem; }
     .doc-link { text-decoration: none; color: #004a99; font-weight: 500; border-bottom: 1px dotted #004a99; }
-    .doc-link:hover { color: #002a5c; border-bottom: 1px solid #002a5c; }
     
-    .success-banner { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+    .timestamp { color: #777; font-size: 0.85rem; }
     .warning-banner { color: #dc3545; background: #fff5f5; border: 1px dashed #dc3545; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
     
     body[dir="rtl"] { text-align: right; }
@@ -97,10 +100,9 @@
         email: "Email",
         btnCheck: "Check Status",
         btnSearching: "Searching...",
-        errorConn: "Connection Issue. We couldn't verify automatically.",
-        errorNoStudent: "No matching student found. Please check your details.",
+        errorConn: "Connection Issue.",
+        errorNoStudent: "No matching student found.",
         statusFor: "Status for",
-        success: "🎉 Registration is complete!",
         timestamp: "Status as of",
         sectForms: "Registration Forms",
         sectExtra: "Additional Acknowledgements",
@@ -113,14 +115,12 @@
         btnBack: "← Search Another Student",
         submitted: "Submitted",
         notSubmitted: "Not Submitted",
+        missing: "Missing",
         warning24h: "New uploads may take 24 hours to show as submitted.",
-        multipleSub: "You can submit multiple times if needed.",
-        camp: "Camp Location",
         am: "Morning Bus Stop",
         pm: "Afternoon Bus Stop",
         change: "Change Bus Stops",
         complete: "Confirm Morning/Afternoon Bus Stop Choice",
-        viewStops: "View All Route Options",
         warningTranspo: "Changes take 24 hours to update."
       },
       es: {
@@ -130,10 +130,9 @@
         email: "Correo Electrónico",
         btnCheck: "Verificar Estado",
         btnSearching: "Buscando...",
-        errorConn: "Problema de conexión. No pudimos verificar automáticamente.",
-        errorNoStudent: "No se encontró ningún estudiante. Verifique sus datos.",
+        errorConn: "Problema de conexión.",
+        errorNoStudent: "No se encontró ningún estudiante.",
         statusFor: "Estado de",
-        success: "🎉 ¡El registro está completo!",
         timestamp: "Estado al",
         sectForms: "Formularios de Registro",
         sectExtra: "Reconocimientos Adicionales",
@@ -146,17 +145,14 @@
         btnBack: "← Buscar Otro Estudiante",
         submitted: "Enviado",
         notSubmitted: "No Enviado",
-        warning24h: "Las nuevas cargas pueden tardar 24 horas en mostrarse como enviadas.",
-        multipleSub: "Puede enviar varias veces si es necesario.",
-        camp: "Ubicación del campamento",
+        missing: "Faltante",
+        warning24h: "Las nuevas cargas pueden tardar 24 horas.",
         am: "Parada de la mañana",
         pm: "Parada de la tarde",
         change: "Cambiar paradas de autobús",
-        complete: "Confirmar elección de parada de autobús de mañana/tarde",
-        viewStops: "Ver todas las opciones de ruta",
-        warningTranspo: "Los cambios tardan 24 horas en actualizarse."
+        complete: "Confirmar elección de parada de autobús",
+        warningTranspo: "Los cambios tardan 24 horas."
       }
-      // Add zh/ar as needed following the same pattern
     };
 
     let currentLang = 'en';
@@ -193,15 +189,10 @@
       const dob = document.getElementById('dob').value;
       const email = document.getElementById('email').value;
       const btn = document.getElementById('btn');
-      const errBox = document.getElementById('error');
       const t = TRANSLATIONS[currentLang];
-      
-      if(!dob || !email) { alert("Please enter both DOB and Email."); return; }
-      
+      if(!dob || !email) return;
       btn.disabled = true;
       btn.innerText = t.btnSearching;
-      errBox.classList.add('hidden');
-
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
@@ -226,25 +217,23 @@
       results.forEach(s => {
         const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
         const extraItems = ["Meningitis"]; 
-        
         const consentData = s.details.filter(d => surveyItems.includes(d.name));
         const extraData = s.details.filter(d => extraItems.includes(d.name));
         const documentData = s.details.filter(d => !surveyItems.includes(d.name) && !extraItems.includes(d.name));
-
         const missingConsents = consentData.filter(d => d.status !== "Submitted").length;
         const missingExtra = extraData.filter(d => d.status !== "Submitted").length;
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
 
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
-
         html += `<p class="timestamp text-center mb-3">${t.timestamp}: ${dateStr}</p>`;
+        html += `<div class="warning-banner">⚠️ <strong>${t.warning24h}</strong></div>`;
 
         // 1. REGISTRATION FORMS
         html += `<div class="section-box section-forms">
                   <div class="section-title">${t.sectForms}</div>
                   <table class="table table-sm mb-0">
-                    <tr><td class="doc-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr>
+                    <tr><td class="item-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr>
                   </table>`;
         if (missingConsents > 0) html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100">${t.btnForms}</a>`;
         html += `</div>`;
@@ -253,7 +242,7 @@
         if (extraData.length > 0) {
           html += `<div class="section-box section-extra"><div class="section-title">${t.sectExtra}</div><table class="table table-sm mb-0">`;
           extraData.forEach(d => {
-              html += `<tr><td class="doc-name">${d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
+              html += `<tr><td class="item-name">${d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
           });
           html += `</table>`;
           if (missingExtra > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
@@ -263,13 +252,13 @@
         // 3. DOCUMENT UPLOADS
         html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
         documentData.forEach(d => {
-            html += `<tr><td class="doc-name">${d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
+            html += `<tr><td class="item-name">${d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
         });
         html += `</table>`;
-        if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 text-dark">${t.btnUploads}</a>`;
+        if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 text-dark" style="background-color: #fd7e14; border: none; color: white !important;">${t.btnUploads}</a>`;
         html += `</div>`;
 
-        // 4. TRANSPORTATION (NOW STYLED THE SAME)
+        // 4. TRANSPORTATION
         if (s.program === "Discovery" && s.transportation) {
             const isUptown = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
@@ -280,17 +269,15 @@
             html += `<div class="section-box section-transpo">
                       <div class="section-title">${t.sectTrans}</div>
                       <table class="table table-sm mb-0">
-                        <tr><td class="doc-name">${t.am}</td><td class="text-end small">${mStop}</td></tr>
-                        <tr><td class="doc-name">${t.pm}</td><td class="text-end small">${aStop}</td></tr>
+                        <tr><td class="item-name">${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? t.missing : mStop}</td></tr>
+                        <tr><td class="item-name">${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? t.missing : aStop}</td></tr>
                       </table>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-warning btn-action w-100 text-dark" style="background-color: #ffc107; border: none;">${hasSub ? t.change : t.complete}</a>
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100" style="background-color: #0dcaf0; border: none; color: white !important;">${hasSub ? t.change : t.complete}</a>
                       <div class="mt-2 text-muted text-center" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div>
                     </div>`;
         }
-
         html += `<hr class="my-4">`;
       });
-
       document.getElementById('content').innerHTML = html;
       document.getElementById('searchBox').classList.add('hidden');
       document.getElementById('results').classList.remove('hidden');
