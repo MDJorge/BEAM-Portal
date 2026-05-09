@@ -22,7 +22,7 @@
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
     .section-extra { border-inline-start-color: #6f42c1; background: #f8f5ff; } 
     .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } 
-    .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } /* New Teal Theme */
+    .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } /* Teal Theme */
 
     .section-title { font-weight: bold; color: #555; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-action { margin-top: 5px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
@@ -41,31 +41,244 @@
 </head>
 <body>
 
+  <div id="searchBox" class="card p-0">
+    <div class="card-header">
+      <div class="lang-toggle">
+        <select id="langSelect" class="form-select form-select-sm" onchange="changeLanguage()">
+          <option value="en">🇺🇸 English</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="ar">🇸🇦 العربية</option>
+        </select>
+      </div>
+      <h3 class="mb-1 mt-2" id="t-title">BEAM Student Portal</h3>
+      <p class="mb-0 small" id="t-subtitle">Check your registration progress and missing forms here</p>
+    </div>
+    <div class="card-body p-4">
+      <div class="mb-3">
+        <label class="form-label fw-bold" id="t-dob">Student Birthdate</label>
+        <input type="date" id="dob" class="form-control">
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-bold" id="t-email">Email</label>
+        <input type="email" id="email" class="form-control" placeholder="guardian@email.com">
+      </div>
+      <button onclick="runSearch()" id="btn" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">Check Status</button>
+      <div id="error" class="alert alert-warning mt-3 text-center hidden" style="font-size: 0.9rem;"></div>
+    </div>
+  </div>
+
+  <div id="results" class="hidden">
+    <div class="card p-0">
+      <div class="card-header">
+         <div class="lang-toggle">
+          <select id="langSelectResult" class="form-select form-select-sm" onchange="syncLang(this)">
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ar">🇸🇦 العربية</option>
+          </select>
+        </div>
+        <h3 class="mb-1 mt-2" id="t-res-title">Student Portal</h3>
+      </div>
+      <div class="card-body p-4">
+        <div id="content"></div>
+        <button onclick="resetSearch()" id="t-back" class="btn btn-link w-100 mt-3 text-decoration-none">← Search Another Student</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // ... (SCRIPT_URL and TRANSLATIONS remain as provided)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
+
+    const TRANSLATIONS = {
+      en: {
+        title: "BEAM Student Portal",
+        subtitle: "Check your registration progress and missing forms here",
+        dob: "Student Birthdate",
+        email: "Email",
+        btnCheck: "Check Status",
+        btnSearching: "Searching...",
+        errorConn: "Connection Issue. We couldn't verify automatically.",
+        errorNoStudent: "No matching student found. Please check your details.",
+        statusFor: "Status for",
+        success: "🎉 Registration is complete!",
+        timestamp: "Status as of",
+        sectForms: "Registration Forms",
+        sectExtra: "Additional Acknowledgements",
+        sectUploads: "Document Uploads",
+        sectTrans: "Transportation",
+        groupedForms: "Student Information and Consent Forms",
+        btnForms: "Complete Forms Now",
+        btnExtra: "Complete Acknowledgement Here",
+        btnUploads: "Upload Missing Documents",
+        btnBack: "← Search Another Student",
+        submitted: "Submitted",
+        notSubmitted: "Not Submitted",
+        missing: "Missing",
+        warning24h: "New uploads may take 24 hours to show as submitted.",
+        multipleSub: "You can submit multiple times if needed.",
+        am: "Morning Bus Stop",
+        pm: "Afternoon Bus Stop",
+        change: "Change Bus Stops",
+        complete: "Confirm Morning/Afternoon Bus Stop Choice",
+        warningTranspo: "Changes take 24 hours to update.",
+        docs: {
+          "Parent Med": "Parent Medical Release",
+          "Phys Med": "Physician's Medical Release",
+          "Meningitis": "Meningitis Vaccine Acknowledgement",
+          "Report Card": "7th Grade Report Card",
+          "Immuno": "Immunization Record",
+          "Ins Front": "Insurance Card (Front)",
+          "Ins Back": "Insurance Card (Back)"
+        }
+      },
+      es: {
+        title: "Portal Estudiantil BEAM",
+        subtitle: "Verifique su progreso de registro y formularios faltantes",
+        dob: "Fecha de Nacimiento del Estudiante",
+        email: "Correo Electrónico",
+        btnCheck: "Verificar Estado",
+        btnSearching: "Buscando...",
+        errorConn: "Problema de conexión.",
+        errorNoStudent: "No se encontró ningún estudiante.",
+        statusFor: "Estado de",
+        success: "🎉 ¡El registro está completo!",
+        timestamp: "Estado al",
+        sectForms: "Formularios de Registro",
+        sectExtra: "Reconocimientos Adicionales",
+        sectUploads: "Carga de Documentos",
+        sectTrans: "Transporte",
+        groupedForms: "Información del Estudiante y Consentimientos",
+        btnForms: "Completar Formularios Ahora",
+        btnExtra: "Completar Reconocimiento Aquí",
+        btnUploads: "Subir Documentos Faltantes",
+        btnBack: "← Buscar Otro Estudiante",
+        submitted: "Enviado",
+        notSubmitted: "No Enviado",
+        missing: "Faltante",
+        warning24h: "Las nuevas cargas pueden tardar 24 horas.",
+        multipleSub: "Puede enviar varias veces si es necesario.",
+        am: "Parada de la mañana",
+        pm: "Parada de la tarde",
+        change: "Cambiar paradas de autobús",
+        complete: "Confirmar elección de parada de autobús",
+        warningTranspo: "Los cambios tardan 24 horas.",
+        docs: {
+          "Parent Med": "Autorización Médica de Padres",
+          "Phys Med": "Autorización Médica del Médico",
+          "Meningitis": "Reconocimiento de Vacuna contra la Meningitis",
+          "Report Card": "Boleta de Calificaciones (7º Grado)",
+          "Immuno": "Registro de Inmunización",
+          "Ins Front": "Tarjeta de Seguro (Frente)",
+          "Ins Back": "Tarjeta de Seguro (Dorso)"
+        }
+      }
+    };
+
+    let currentLang = 'en';
+    let currentResults = null;
+
+    function syncLang(el) {
+      document.getElementById('langSelect').value = el.value;
+      document.getElementById('langSelectResult').value = el.value;
+      changeLanguage();
+    }
+
+    function changeLanguage() {
+      currentLang = document.getElementById('langSelect').value;
+      if (currentResults) render(currentResults);
+    }
+
+    function resetSearch() {
+      document.getElementById('dob').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('searchBox').classList.remove('hidden');
+      document.getElementById('content').innerHTML = '';
+      currentResults = null;
+    }
+
+    window.receiveData = function(results) {
+      const scriptTag = document.getElementById('jsonp_loader');
+      if(scriptTag) scriptTag.remove(); 
+      currentResults = results;
+      render(results);
+    };
+
+    function runSearch() {
+      const dob = document.getElementById('dob').value;
+      const email = document.getElementById('email').value;
+      const btn = document.getElementById('btn');
+      const t = TRANSLATIONS[currentLang];
+      if(!dob || !email) return;
+      btn.disabled = true;
+      btn.innerText = t.btnSearching;
+      const script = document.createElement('script');
+      script.id = 'jsonp_loader';
+      script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
+      document.body.appendChild(script);
+    }
 
     function render(results) {
       const t = TRANSLATIONS[currentLang];
-      // ... (Initial setup same as your code)
+      document.getElementById('btn').disabled = false;
+      document.getElementById('btn').innerText = t.btnCheck;
+
+      if (!results || results.length === 0) {
+        document.getElementById('error').innerHTML = t.errorNoStudent;
+        document.getElementById('error').classList.remove('hidden');
+        return;
+      }
+
+      const today = new Date();
+      const dateStr = (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear() + ' 6:00 AM EST';
+      let html = '';
 
       results.forEach(s => {
-        // (Filtering data categories same as your code)
+        const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
+        const extraItems = ["Meningitis"]; 
+        const consentData = s.details.filter(d => surveyItems.includes(d.name));
+        const extraData = s.details.filter(d => extraItems.includes(d.name));
+        const documentData = s.details.filter(d => !surveyItems.includes(d.name) && !extraItems.includes(d.name));
+
+        const missingConsents = consentData.filter(d => d.status !== "Submitted").length;
+        const missingExtra = extraData.filter(d => d.status !== "Submitted").length;
+        const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
+        const isFullyComplete = (missingConsents === 0 && missingExtra === 0 && missingDocs === 0);
+
+        html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
+        html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
+
+        if (isFullyComplete) html += `<div class="success-banner">${t.success}</div>`;
+        html += `<p class="timestamp text-center">${t.timestamp}: ${dateStr}</p>`;
+
+        html += `<div class="warning-banner">
+                   ⚠️ <strong>${t.warning24h}</strong><br>
+                   <span style="color: #666; font-size: 0.85rem;">${t.multipleSub}</span>
+                 </div>`;
 
         // 1. REGISTRATION FORMS (UNTOUCHED)
         html += `<div class="section-box section-forms">
                   <div class="section-title">${t.sectForms}</div>
                   <table class="table table-sm mb-0">
-                    <tr><td class="doc-name">${t.groupedForms}</td><td class="${consentGroupClass} text-end">${consentGroupStatus}</td></tr>
+                    <tr><td class="doc-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr>
                   </table>`;
         if (missingConsents > 0) html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100 mt-2">${t.btnForms}</a>`;
         html += `</div>`;
 
-        // 2. EXTRA (UNTOUCHED)
+        // 2. ADDITIONAL ACKNOWLEDGEMENTS (UNTOUCHED)
         if (extraData.length > 0) {
-          // ... (Same logic as provided)
+          html += `<div class="section-box section-extra"><div class="section-title">${t.sectExtra}</div><table class="table table-sm mb-0">`;
+          extraData.forEach(d => {
+              html += `<tr><td class="doc-name">${t.docs[d.name] || d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
+          });
+          html += `</table>`;
+          if (missingExtra > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
+          html += `</div>`;
         }
 
-        // 3. DOCUMENT UPLOADS (ONLY CHANGE: BUTTON COLOR)
+        // 3. DOCUMENT UPLOADS (ORANGE BUTTON)
         html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
         documentData.forEach(d => {
             let name = t.docs[d.name] || d.name;
@@ -74,11 +287,10 @@
             html += `<tr><td class="doc-name">${name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
         });
         html += `</table>`;
-        // UPDATED: Orange button to match the box
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white" style="background-color: #fd7e14; border: none;">${t.btnUploads}</a>`;
         html += `</div>`;
 
-        // 4. TRANSPORTATION (RE-STYLED TO MATCH SECTIONS)
+        // 4. TRANSPORTATION (TEAL THEME + ROWS)
         if (s.program === "Discovery" && s.transportation) {
             const isUptown = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
@@ -87,19 +299,20 @@
             const hasSub = (mStop !== "Missing" && mStop !== "") && (aStop !== "Missing" && aStop !== "");
 
             html += `<div class="section-box section-transpo">
-                      <div class="section-title">${t.transportation}</div>
+                      <div class="section-title">${t.sectTrans}</div>
                       <table class="table table-sm mb-0">
-                        <tr><td class="doc-name">${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? 'Missing' : mStop}</td></tr>
-                        <tr><td class="doc-name">${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? 'Missing' : aStop}</td></tr>
+                        <tr><td class="doc-name">${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? t.missing : mStop}</td></tr>
+                        <tr><td class="doc-name">${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? t.missing : aStop}</td></tr>
                       </table>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 text-white" style="background-color: #0dcaf0; border: none;">${hasSub ? t.change : t.complete}</a>
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${hasSub ? t.change : t.complete}</a>
                       <div class="mt-2 text-muted text-center" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div>
                     </div>`;
         }
         html += `<hr class="my-4">`;
       });
       document.getElementById('content').innerHTML = html;
-      // ... (Search box hiding logic)
+      document.getElementById('searchBox').classList.add('hidden');
+      document.getElementById('results').classList.remove('hidden');
     }
   </script>
 </body>
