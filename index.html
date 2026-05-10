@@ -33,7 +33,7 @@
         </select>
       </div>
       <h3 id="t-title">BEAM Student Portal</h3>
-      <p id="t-subtitle">Check your progress here</p>
+      <p id="t-subtitle">Check your registration progress here</p>
     </div>
     <div class="card-body p-4">
       <div class="mb-3">
@@ -60,7 +60,7 @@
 
   <script>
     // MAKE SURE TO UPDATE THIS URL AFTER RE-DEPLOYING THE SCRIPT
-    const SCRIPT_URL = "YOUR_WEB_APP_URL_HERE";
+    const SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
 
     const TRANSLATIONS = {
       en: {
@@ -68,16 +68,16 @@
         dob: "Student Birthdate", email: "Email", btnCheck: "Check Status", btnSearching: "Searching...",
         errorNoStudent: "No matching student found.", statusFor: "Status for",
         sectForms: "Forms", sectTrans: "Transportation", submitted: "Submitted", notSubmitted: "Not Submitted",
-        missing: "Missing", am: "Morning Bus", pm: "Afternoon Bus", change: "Change Stops", complete: "Confirm Stops",
+        missing: "Missing", am: "Morning Bus Stop", pm: "Afternoon Bus Stop", change: "Change Stops", complete: "Confirm Stops",
         btnBack: "← Search Another Student",
-        docs: { "Parent Med": "Parent Medical", "Phys Med": "Physician Medical", "Meningitis": "Meningitis Form", "Report Card": "Report Card", "Immuno": "Immunizations", "Ins Front": "Insurance (Front)", "Ins Back": "Insurance (Back)" }
+        docs: { "Parent Med": "Parent Medical Release", "Phys Med": "Physician's Medical Release", "Meningitis": "Meningitis Vaccine Acknowledgement", "Report Card": "7th Grade Report Card", "Immuno": "Immunization Record", "Ins Front": "Insurance Card (Front)", "Ins Back": "Insurance Card (Back)" }
       },
       es: {
         title: "Portal Estudiantil BEAM", subtitle: "Verifique su progreso de registro",
         dob: "Fecha de Nacimiento", email: "Correo Electrónico", btnCheck: "Verificar Estado", btnSearching: "Buscando...",
         errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
         sectForms: "Formularios", sectTrans: "Transporte", submitted: "Enviado", notSubmitted: "No Enviado",
-        missing: "Faltante", am: "Bus de la mañana", pm: "Bus de la tarde", change: "Cambiar paradas", complete: "Confirmar paradas",
+        missing: "Faltante", am: "Parada de la mañana", pm: "Parada de la tarde", change: "Cambiar paradas", complete: "Confirmar elección",
         btnBack: "← Buscar Otro Estudiante",
         docs: { "Parent Med": "Médico Padres", "Phys Med": "Médico Doctor", "Meningitis": "Meningitis", "Report Card": "Boleta", "Immuno": "Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
       },
@@ -86,18 +86,18 @@
         dob: "学生出生日期", email: "电子邮件", btnCheck: "查看状态", btnSearching: "搜索中...",
         errorNoStudent: "未找到匹配的学生。", statusFor: "状态：",
         sectForms: "表格", sectTrans: "交通", submitted: "已提交", notSubmitted: "未提交",
-        missing: "缺失", am: "上午巴士", pm: "下午巴士", change: "更改巴士站", complete: "确认选择",
+        missing: "缺失", am: "上午巴士站", pm: "下午巴士站", change: "更改巴士站", complete: "确认选择",
         btnBack: "← 搜索另一名学生",
-        docs: { "Parent Med": "家长医疗", "Phys Med": "医生医疗", "Meningitis": "脑膜炎确认书", "Report Card": "成绩单", "Immuno": "免疫记录", "Ins Front": "保险卡 (正面)", "Ins Back": "保险卡 (背面)" }
+        docs: { "Parent Med": "家长医疗授权书", "Phys Med": "医生医疗授权书", "Meningitis": "脑膜炎确认书", "Report Card": "成绩单", "Immuno": "免疫记录", "Ins Front": "保险卡 (正面)", "Ins Back": "保险卡 (背面)" }
       },
       ar: {
         title: "بوابة طلاب BEAM", subtitle: "تحقق من تقدم التسجيل هنا",
         dob: "تاريخ ميلاد الطالب", email: "البريد الإلكتروني", btnCheck: "التحقق من الحالة", btnSearching: "جاري البحث...",
         errorNoStudent: "لم يتم العثور على طالب.", statusFor: "الحالة لـ",
         sectForms: "نماذج", sectTrans: "المواصلات", submitted: "تم الإرسال", notSubmitted: "لم يتم الإرسال",
-        missing: "مفقود", am: "حافلة الصباح", pm: "حافلة المساء", change: "تغيير المواقف", complete: "تأكيد المواقف",
+        missing: "مفقود", am: "موقف حافلة الصباح", pm: "موقف حافلة المساء", change: "تغيير المواقف", complete: "تأكيد المواقف",
         btnBack: "← البحث عن طالب آخر",
-        docs: { "Parent Med": "طبي الوالدين", "Phys Med": "طبي الطبيب", "Meningitis": "التهاب السحايا", "Report Card": "الشهادة", "Immuno": "التطعيمات", "Ins Front": "التأمين (الأمام)", "Ins Back": "التأمين (الخلف)" }
+        docs: { "Parent Med": "طبي الوالدين", "Phys Med": "طبي الطبيب", "Meningitis": "التهاب السحايا", "Report Card": "الشهادة", "Immuno": "التطعيما", "Ins Front": "التأمين (الأمام)", "Ins Back": "التأمين (الخلف)" }
       }
     };
 
@@ -147,25 +147,28 @@
       results.forEach(s => {
         html += `<h4 class="text-center">${t.statusFor} ${s.firstName}</h4>`;
         
-        // Forms Logic
-        const missingForms = s.details.filter(d => ["Liability Waiver", "Media Release"].includes(d.name) && d.status !== "Submitted").length;
+        const mForms = s.details.filter(d => ["Liability Waiver", "Media Release"].includes(d.name) && d.status !== "Submitted").length;
         html += `<div class="section-box section-forms">
-                  <div>${t.sectForms}</div>
+                  <div class="fw-bold mb-1">${t.sectForms}</div>
                   <div class="d-flex justify-content-between">
-                    <span>Forms</span>
-                    <span class="${missingForms === 0 ? 'status-Submitted' : 'status-Not-Submitted'}">${missingForms === 0 ? t.submitted : t.notSubmitted}</span>
+                    <span>Registration Forms</span>
+                    <span class="${mForms === 0 ? 'status-Submitted' : 'status-Not-Submitted'}">${mForms === 0 ? t.submitted : t.notSubmitted}</span>
                   </div>
                 </div>`;
 
-        // Transpo Logic
         if (s.program === "Discovery" && s.transportation) {
             const isUT = (s.transportation.location || "").toLowerCase().includes("ut");
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
+            const mStop = s.transportation.morning || t.missing;
+            const aStop = s.transportation.afternoon || t.missing;
+            
             html += `<div class="section-box section-transpo">
-                      <div>${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
-                      <div class="small">AM: ${s.transportation.morning || t.missing}</div>
-                      <div class="small">PM: ${s.transportation.afternoon || t.missing}</div>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 text-white">${t.change}</a>
+                      <div class="fw-bold mb-1">${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
+                      <table class="table table-sm mb-0">
+                        <tr><td>${t.am}</td><td class="text-end">${mStop}</td></tr>
+                        <tr><td>${t.pm}</td><td class="text-end">${aStop}</td></tr>
+                      </table>
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 text-white mt-2">${(mStop !== t.missing) ? t.change : t.complete}</a>
                     </div>`;
         }
       });
