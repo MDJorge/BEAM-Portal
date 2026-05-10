@@ -6,97 +6,99 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { background-color: #f4f7f9; padding: 20px; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; transition: all 0.3s ease; }
+    body { background-color: #f4f7f9; padding: 20px; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     .hidden { display: none; }
     .card { border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; margin: auto; background: white; }
     .card-header { background: #004a99; color: white; padding: 20px; border-radius: 12px 12px 0 0; position: relative; }
     .lang-toggle { position: absolute; top: 15px; right: 15px; }
-    .form-select-sm { background-color: rgba(255,255,255,0.9); border: none; font-weight: bold; color: #004a99; cursor: pointer; }
     .status-Submitted { color: #198754 !important; font-weight: bold; }
     .status-Not-Submitted, .status-Missing { color: #dc3545 !important; font-weight: bold; }
     .section-box { border-radius: 8px; padding: 15px; margin-bottom: 15px; border-inline-start: 5px solid #ccc; background: #fff; }
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
-    .section-extra { border-inline-start-color: #6f42c1; background: #f8f5ff; } 
-    .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } 
     .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; }
-    .section-title { font-weight: bold; color: #555; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-action { margin-top: 5px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
-    .table td { padding: 10px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
-    .doc-name { color: #444; font-size: 0.95rem; }
-    .doc-link { text-decoration: none; color: #004a99; font-weight: 500; border-bottom: 1px dotted #004a99; }
-    .success-banner { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
-    .warning-banner { color: #dc3545; background: #fff5f5; border: 1px dashed #dc3545; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
+    body[dir="rtl"] { text-align: right; }
   </style>
 </head>
 <body>
 
-  <div id="searchBox" class="card p-0">
+  <div id="searchBox" class="card">
     <div class="card-header">
       <div class="lang-toggle">
         <select id="langSelect" class="form-select form-select-sm" onchange="changeLanguage()">
           <option value="en">🇺🇸 English</option>
           <option value="es">🇪🇸 Español</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="ar">🇸🇦 العربية</option>
         </select>
       </div>
-      <h3 class="mb-1 mt-2" id="t-title">BEAM Student Portal</h3>
-      <p class="mb-0 small" id="t-subtitle">Check your registration progress here</p>
+      <h3 id="t-title">BEAM Student Portal</h3>
+      <p id="t-subtitle">Check your progress here</p>
     </div>
     <div class="card-body p-4">
       <div class="mb-3">
-        <label class="form-label fw-bold">Student Birthdate</label>
+        <label class="form-label fw-bold" id="t-dob">Student Birthdate</label>
         <input type="date" id="dob" class="form-control">
       </div>
       <div class="mb-4">
-        <label class="form-label fw-bold">Email</label>
+        <label class="form-label fw-bold" id="t-email">Email</label>
         <input type="email" id="email" class="form-control" placeholder="guardian@email.com">
       </div>
-      <button onclick="runSearch()" id="btn" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">Check Status</button>
-      <div id="error" class="alert alert-warning mt-3 text-center hidden"></div>
+      <button onclick="runSearch()" id="btn" class="btn btn-primary w-100 fw-bold">Check Status</button>
+      <div id="error" class="alert alert-warning mt-3 hidden"></div>
     </div>
   </div>
 
   <div id="results" class="hidden">
-    <div class="card p-0">
+    <div class="card">
       <div class="card-body p-4">
         <div id="content"></div>
-        <button onclick="resetSearch()" class="btn btn-link w-100 mt-3 text-decoration-none">← Search Another Student</button>
+        <button onclick="resetSearch()" id="t-back" class="btn btn-link w-100">← Back</button>
       </div>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
+    // MAKE SURE TO UPDATE THIS URL AFTER RE-DEPLOYING THE SCRIPT
+    const SCRIPT_URL = "YOUR_WEB_APP_URL_HERE";
 
     const TRANSLATIONS = {
       en: {
-        title: "BEAM Student Portal",
-        subtitle: "Check your registration progress here",
-        btnCheck: "Check Status",
-        btnSearching: "Searching...",
-        errorNoStudent: "No student found. Check your details.",
-        statusFor: "Status for",
-        success: "🎉 Registration is complete!",
-        timestamp: "Status as of",
-        sectForms: "Registration Forms",
-        sectExtra: "Additional Acknowledgements",
-        sectUploads: "Document Uploads",
-        sectTrans: "Transportation",
-        groupedForms: "Student Information and Consent Forms",
-        btnForms: "Complete Forms Now",
-        btnExtra: "Complete Acknowledgement Here",
-        btnUploads: "Upload Missing Documents",
-        submitted: "Submitted",
-        notSubmitted: "Not Submitted",
-        missing: "Missing",
-        warning24h: "New uploads may take 24 hours to update.",
-        am: "Morning Bus Stop",
-        pm: "Afternoon Bus Stop",
-        change: "Change Bus Stops",
-        complete: "Confirm Bus Stop Choice",
-        warningTranspo: "Changes take 24 hours to update.",
-        docs: { "Parent Med": "Parent Medical Release", "Phys Med": "Physician's Medical Release", "Meningitis": "Meningitis Vaccine Acknowledgement", "Report Card": "7th Grade Report Card", "Immuno": "Immunization Record", "Ins Front": "Insurance Card (Front)", "Ins Back": "Insurance Card (Back)" }
+        title: "BEAM Student Portal", subtitle: "Check your registration progress here",
+        dob: "Student Birthdate", email: "Email", btnCheck: "Check Status", btnSearching: "Searching...",
+        errorNoStudent: "No matching student found.", statusFor: "Status for",
+        sectForms: "Forms", sectTrans: "Transportation", submitted: "Submitted", notSubmitted: "Not Submitted",
+        missing: "Missing", am: "Morning Bus", pm: "Afternoon Bus", change: "Change Stops", complete: "Confirm Stops",
+        btnBack: "← Search Another Student",
+        docs: { "Parent Med": "Parent Medical", "Phys Med": "Physician Medical", "Meningitis": "Meningitis Form", "Report Card": "Report Card", "Immuno": "Immunizations", "Ins Front": "Insurance (Front)", "Ins Back": "Insurance (Back)" }
       },
-      es: { /* Spanish translations... */ }
+      es: {
+        title: "Portal Estudiantil BEAM", subtitle: "Verifique su progreso de registro",
+        dob: "Fecha de Nacimiento", email: "Correo Electrónico", btnCheck: "Verificar Estado", btnSearching: "Buscando...",
+        errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
+        sectForms: "Formularios", sectTrans: "Transporte", submitted: "Enviado", notSubmitted: "No Enviado",
+        missing: "Faltante", am: "Bus de la mañana", pm: "Bus de la tarde", change: "Cambiar paradas", complete: "Confirmar paradas",
+        btnBack: "← Buscar Otro Estudiante",
+        docs: { "Parent Med": "Médico Padres", "Phys Med": "Médico Doctor", "Meningitis": "Meningitis", "Report Card": "Boleta", "Immuno": "Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
+      },
+      zh: {
+        title: "BEAM 学生门户", subtitle: "在此查看您的注册进度",
+        dob: "学生出生日期", email: "电子邮件", btnCheck: "查看状态", btnSearching: "搜索中...",
+        errorNoStudent: "未找到匹配的学生。", statusFor: "状态：",
+        sectForms: "表格", sectTrans: "交通", submitted: "已提交", notSubmitted: "未提交",
+        missing: "缺失", am: "上午巴士", pm: "下午巴士", change: "更改巴士站", complete: "确认选择",
+        btnBack: "← 搜索另一名学生",
+        docs: { "Parent Med": "家长医疗", "Phys Med": "医生医疗", "Meningitis": "脑膜炎确认书", "Report Card": "成绩单", "Immuno": "免疫记录", "Ins Front": "保险卡 (正面)", "Ins Back": "保险卡 (背面)" }
+      },
+      ar: {
+        title: "بوابة طلاب BEAM", subtitle: "تحقق من تقدم التسجيل هنا",
+        dob: "تاريخ ميلاد الطالب", email: "البريد الإلكتروني", btnCheck: "التحقق من الحالة", btnSearching: "جاري البحث...",
+        errorNoStudent: "لم يتم العثور على طالب.", statusFor: "الحالة لـ",
+        sectForms: "نماذج", sectTrans: "المواصلات", submitted: "تم الإرسال", notSubmitted: "لم يتم الإرسال",
+        missing: "مفقود", am: "حافلة الصباح", pm: "حافلة المساء", change: "تغيير المواقف", complete: "تأكيد المواقف",
+        btnBack: "← البحث عن طالب آخر",
+        docs: { "Parent Med": "طبي الوالدين", "Phys Med": "طبي الطبيب", "Meningitis": "التهاب السحايا", "Report Card": "الشهادة", "Immuno": "التطعيمات", "Ins Front": "التأمين (الأمام)", "Ins Back": "التأمين (الخلف)" }
+      }
     };
 
     let currentLang = 'en';
@@ -104,6 +106,14 @@
 
     function changeLanguage() {
       currentLang = document.getElementById('langSelect').value;
+      const t = TRANSLATIONS[currentLang];
+      document.body.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
+      document.getElementById('t-title').innerText = t.title;
+      document.getElementById('t-subtitle').innerText = t.subtitle;
+      document.getElementById('t-dob').innerText = t.dob;
+      document.getElementById('t-email').innerText = t.email;
+      document.getElementById('btn').innerText = t.btnCheck;
+      document.getElementById('t-back').innerText = t.btnBack;
       if (currentResults) render(currentResults);
     }
 
@@ -127,76 +137,37 @@
     function render(results) {
       const t = TRANSLATIONS[currentLang];
       document.getElementById('btn').innerText = t.btnCheck;
-
       if (!results || results.length === 0) {
-        document.getElementById('error').innerHTML = t.errorNoStudent;
+        document.getElementById('error').innerText = t.errorNoStudent;
         document.getElementById('error').classList.remove('hidden');
         return;
       }
-
+      document.getElementById('error').classList.add('hidden');
       let html = '';
       results.forEach(s => {
-        const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
-        const extraItems = ["Meningitis"]; 
-        const consentData = s.details.filter(d => surveyItems.includes(d.name));
-        const extraData = s.details.filter(d => extraItems.includes(d.name));
-        const documentData = s.details.filter(d => !surveyItems.includes(d.name) && !extraItems.includes(d.name));
-
-        const missingC = consentData.filter(d => d.status !== "Submitted").length;
-        const missingE = extraData.filter(d => d.status !== "Submitted").length;
-        const missingD = documentData.filter(d => d.status !== "Submitted").length;
-
-        html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
-        html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
-
-        // 1. FORMS
+        html += `<h4 class="text-center">${t.statusFor} ${s.firstName}</h4>`;
+        
+        // Forms Logic
+        const missingForms = s.details.filter(d => ["Liability Waiver", "Media Release"].includes(d.name) && d.status !== "Submitted").length;
         html += `<div class="section-box section-forms">
-                  <div class="section-title">${t.sectForms}</div>
-                  <table class="table table-sm mb-0">
-                    <tr><td>${t.groupedForms}</td><td class="${missingC === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingC === 0 ? t.submitted : t.notSubmitted}</td></tr>
-                  </table>`;
-        if (missingC > 0) html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100 mt-2">${t.btnForms}</a>`;
-        html += `</div>`;
+                  <div>${t.sectForms}</div>
+                  <div class="d-flex justify-content-between">
+                    <span>Forms</span>
+                    <span class="${missingForms === 0 ? 'status-Submitted' : 'status-Not-Submitted'}">${missingForms === 0 ? t.submitted : t.notSubmitted}</span>
+                  </div>
+                </div>`;
 
-        // 2. EXTRA
-        if (extraData.length > 0) {
-          html += `<div class="section-box section-extra"><div class="section-title">${t.sectExtra}</div><table class="table table-sm mb-0">`;
-          extraData.forEach(d => {
-              html += `<tr><td>${t.docs[d.name] || d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
-          });
-          html += `</table>`;
-          if (missingE > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
-          html += `</div>`;
-        }
-
-        // 3. UPLOADS
-        html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
-        documentData.forEach(d => {
-            html += `<tr><td>${t.docs[d.name] || d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
-        });
-        html += `</table>`;
-        if (missingD > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white" style="background-color: #fd7e14; border: none;">${t.btnUploads}</a>`;
-        html += `</div>`;
-
-        // 4. TRANSPORTATION (DYNAMIC LOGIC)
+        // Transpo Logic
         if (s.program === "Discovery" && s.transportation) {
-            const loc = (s.transportation.location || "").toUpperCase();
-            const isUptown = loc.includes("UT"); // Checks for "UT" in Column O string
-            const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
-            const mStop = s.transportation.morning || "Missing";
-            const aStop = s.transportation.afternoon || "Missing";
-            const hasSub = (mStop !== "Missing" && mStop !== "") && (aStop !== "Missing" && aStop !== "");
-
+            const isUT = (s.transportation.location || "").toLowerCase().includes("ut");
+            const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
             html += `<div class="section-box section-transpo">
-                      <div class="section-title">${t.sectTrans} (${isUptown ? 'Uptown' : 'Downtown'})</div>
-                      <table class="table table-sm mb-0">
-                        <tr><td>${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? t.missing : mStop}</td></tr>
-                        <tr><td>${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? t.missing : aStop}</td></tr>
-                      </table>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${hasSub ? t.change : t.complete}</a>
+                      <div>${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
+                      <div class="small">AM: ${s.transportation.morning || t.missing}</div>
+                      <div class="small">PM: ${s.transportation.afternoon || t.missing}</div>
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 text-white">${t.change}</a>
                     </div>`;
         }
-        html += `<hr class="my-4">`;
       });
       document.getElementById('content').innerHTML = html;
       document.getElementById('searchBox').classList.add('hidden');
@@ -206,7 +177,6 @@
     function resetSearch() {
       document.getElementById('results').classList.add('hidden');
       document.getElementById('searchBox').classList.remove('hidden');
-      document.getElementById('error').classList.add('hidden');
     }
   </script>
 </body>
