@@ -17,6 +17,13 @@
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
     .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; }
     .btn-action { margin-top: 5px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
+    
+    /* THE BUTTON FIX: Lightens and prevents clicks when searching */
+    button:disabled { 
+      opacity: 0.5; 
+      cursor: not-allowed;
+    }
+    
     body[dir="rtl"] { text-align: right; }
   </style>
 </head>
@@ -59,7 +66,6 @@
   </div>
 
   <script>
-    // MAKE SURE TO UPDATE THIS URL AFTER RE-DEPLOYING THE SCRIPT
     const SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
 
     const TRANSLATIONS = {
@@ -120,8 +126,14 @@
     function runSearch() {
       const dob = document.getElementById('dob').value;
       const email = document.getElementById('email').value;
+      const btn = document.getElementById('btn');
+      
       if(!dob || !email) return;
-      document.getElementById('btn').innerText = TRANSLATIONS[currentLang].btnSearching;
+
+      // DISABLE BUTTON
+      btn.disabled = true;
+      btn.innerText = TRANSLATIONS[currentLang].btnSearching;
+
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
@@ -136,18 +148,25 @@
 
     function render(results) {
       const t = TRANSLATIONS[currentLang];
-      document.getElementById('btn').innerText = t.btnCheck;
+      const btn = document.getElementById('btn');
+      
+      // RE-ENABLE BUTTON
+      btn.disabled = false;
+      btn.innerText = t.btnCheck;
+
       if (!results || results.length === 0) {
         document.getElementById('error').innerText = t.errorNoStudent;
         document.getElementById('error').classList.remove('hidden');
         return;
       }
       document.getElementById('error').classList.add('hidden');
+      
       let html = '';
       results.forEach(s => {
         html += `<h4 class="text-center">${t.statusFor} ${s.firstName}</h4>`;
         
-        const mForms = s.details.filter(d => ["Liability Waiver", "Media Release"].includes(d.name) && d.status !== "Submitted").length;
+        const mForms = s.details.filter(d => ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"].includes(d.name) && d.status !== "Submitted").length;
+        
         html += `<div class="section-box section-forms">
                   <div class="fw-bold mb-1">${t.sectForms}</div>
                   <div class="d-flex justify-content-between">
@@ -157,7 +176,7 @@
                 </div>`;
 
         if (s.program === "Discovery" && s.transportation) {
-            const isUT = (s.transportation.location || "").toLowerCase().includes("ut");
+            const isUT = (s.transportation.location || "").toUpperCase().includes("UT");
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
             const mStop = s.transportation.morning || t.missing;
             const aStop = s.transportation.afternoon || t.missing;
