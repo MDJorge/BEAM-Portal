@@ -266,12 +266,24 @@
 
         // 4. TRANSPO
         if (s.program === "Discovery" && s.transportation) {
-            const isUptown = (s.transportation.location || "").toLowerCase().includes("uptown");
+            const loc = (s.transportation.location || "").toUpperCase();
+            // Logic: If location contains "UT" it is Uptown, otherwise it is Downtown
+            const isUptown = loc.includes("UT");
             const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
+            
             const mS = s.transportation.morning; const aS = s.transportation.afternoon;
             html += `<div class="section-box section-transpo"><div class="section-title">${t.sectTrans}</div><table class="table table-sm mb-0"><tr><td class="doc-name">${t.am}</td><td class="${!mS ? 'status-Missing' : ''} text-end">${mS ? mS : t.missing}</td></tr><tr><td class="doc-name">${t.pm}</td><td class="${!aS ? 'status-Missing' : ''} text-end">${aS ? aS : t.missing}</td></tr></table>`;
             html += `<a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${(mS && aS) ? t.change : t.complete}</a>`;
-            html += `<button class="btn btn-link w-100 btn-sm text-decoration-none mt-2" onclick="document.getElementById('stopList').classList.toggle('hidden')">${t.viewStops}</button><div id="stopList" class="hidden small mt-2 border-top pt-2"><strong>Uptown Stops:</strong> Comp Sci High, Fordham, 125th St.<br><strong>Downtown Stops:</strong> New Design High, Union Sq, Brooklyn Bridge.</div><div class="mt-2 text-muted text-center" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div></div>`;
+            html += `<button class="btn btn-link w-100 btn-sm text-decoration-none mt-2" onclick="document.getElementById('stopList').classList.toggle('hidden')">${t.viewStops}</button>`;
+            
+            // Contextual Stop List
+            html += `<div id="stopList" class="hidden small mt-2 border-top pt-2">`;
+            if (isUptown) {
+               html += `<strong>Uptown Stops:</strong> Comp Sci High, Fordham, 125th St / St Nicholas.`;
+            } else {
+               html += `<strong>Downtown Stops:</strong> New Design High, Union Sq, Brooklyn Bridge / City Hall.`;
+            }
+            html += `</div><div class="mt-2 text-muted text-center" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div></div>`;
         }
         html += `<hr class="my-4">`;
       });
