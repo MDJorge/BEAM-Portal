@@ -199,6 +199,7 @@
       const t = TRANSLATIONS[currentLang];
       document.getElementById('btn').disabled = false;
       document.getElementById('btn').innerText = t.btnCheck;
+
       if (!results || results.length === 0) {
         document.getElementById('error').innerHTML = t.errorNoStudent;
         document.getElementById('error').classList.remove('hidden');
@@ -206,26 +207,47 @@
       }
       document.getElementById('error').classList.add('hidden');
       
-      const dateStr = new Date().toLocaleDateString() + ' 6:00 AM EST';
+      const today = new Date();
+      const dateStr = (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear() + ' 6:00 AM EST';
       let html = '';
       
       results.forEach(s => {
-        const documentData = s.details.filter(d => !["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"].includes(d.name));
+        // Logic for "Registration Complete" banner
+        const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
+        const documentData = s.details.filter(d => !surveyItems.includes(d.name) && d.name !== "Meningitis");
+        
+        const missingConsents = s.details.filter(d => surveyItems.includes(d.name) && d.status !== "Submitted").length;
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
         
         let transpoComplete = true;
         if (s.program === "Discovery" && s.transportation) {
-          if (!s.transportation.morning || s.transportation.morning === "Missing" || !s.transportation.afternoon || s.transportation.afternoon === "Missing") transpoComplete = false;
+          if (!s.transportation.morning || s.transportation.morning === "Missing" || !s.transportation.afternoon || s.transportation.afternoon === "Missing") {
+            transpoComplete = false;
+          }
         }
+
+        // A student is complete if no missing consents, no missing docs, and transpo is done (if applicable)
+        const isFullyComplete = (missingConsents === 0 && missingDocs === 0 && transpoComplete);
 
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
+        
+        // RESTORED: Registration Complete Banner
+        if (isFullyComplete) {
+          html += `<div class="success-banner">${t.success}</div>`;
+        }
+        
         html += `<p class="timestamp text-center small text-muted">${t.timestamp}: ${dateStr}</p>`;
         
-        // Forms
-        html += `<div class="section-box section-forms"><div class="section-title">${t.sectForms}</div><table class="table table-sm mb-0"><tr><td class="doc-name">Registration & Consent Forms</td><td class="text-end status-Submitted">${t.submitted}</td></tr></table></div>`;
+        // 1. FORMS
+        html += `<div class="section-box section-forms">
+                  <div class="section-title">${t.sectForms}</div>
+                  <table class="table table-sm mb-0">
+                    <tr><td class="doc-name">Registration & Consent Forms</td><td class="text-end status-Submitted">${t.submitted}</td></tr>
+                  </table>
+                </div>`;
 
-        // Uploads
+        // 2. UPLOADS
         html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
         documentData.forEach(d => {
             html += `<tr><td class="doc-name">${t.docs[d.name] || d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
@@ -234,7 +256,7 @@
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white">${t.btnUploads}</a>`;
         html += `</div>`;
 
-        // Transportation (Updated with green choices)
+        // 3. TRANSPORTATION (Updated with Green Choices)
         if (s.program === "Discovery" && s.transportation) {
             const isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
@@ -248,10 +270,22 @@
             html += `<div class="section-box section-transpo">
                       <div class="section-title">${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
                       <table class="table table-sm mb-0">
-                        <tr><td class="doc-name">${t.am}</td><td class="${mIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">${mIsMissing ? t.missing : mRaw}</td></tr>
-                        <tr><td class="doc-name">${t.pm}</td><td class="${aIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">${aIsMissing ? t.missing : aRaw}</td></tr>
+                        <tr>
+                          <td class="doc-name">${t.am}</td>
+                          <td class="${mIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">
+                            ${mIsMissing ? t.missing : mRaw}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="doc-name">${t.pm}</td>
+                          <td class="${aIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">
+                            ${aIsMissing ? t.missing : aRaw}
+                          </td>
+                        </tr>
                       </table>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${transpoComplete ? t.change : t.complete}</a>
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">
+                        ${transpoComplete ? t.change : t.complete}
+                      </a>
                       <details class="transpo-guide">
                         <summary>${t.guideTitle}</summary>
                         <ul>${detailsList.map(item => `<li>${item}</li>`).join('')}</ul>
