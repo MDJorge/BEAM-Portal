@@ -85,7 +85,7 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
     
-    // Stop Data (Structured for translation)
+    // Stop Data Structure
     const STOPS_UPTOWN = [
         { name: "New Design HS (350 Grand St)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
         { name: "Prospect Park (B/Q)", am: "8:20 AM", pm: "4:40 PM", extra: "(Lincoln Market)" },
@@ -131,13 +131,13 @@
         title: "Portal Estudiantil BEAM", subtitle: "Verifique su progreso de registro y formularios faltantes",
         dob: "Fecha de Nacimiento", email: "Correo Electrónico", btnCheck: "Verificar Estado", btnSearching: "Buscando...",
         errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
-        errorConn: "Problema de conexión.", manualBtn: "Abrir Portal Seguro ↗",
+        errorConn: "Problema de conexión. No pudimos verificar automáticamente.", manualBtn: "Abrir Portal Seguro ↗",
         success: "🎉 ¡El registro está completo!", incomplete: "⚠️ Su registro aún está en progreso. Por favor complete los elementos faltantes a continuación.",
         timestamp: "Estado al", sectForms: "Formularios de Registro", sectExtra: "Reconocimientos Adicionales", sectUploads: "Carga de Documentos", sectTrans: "Transporte",
         regFormsLabel: "Formularios de Registro y Consentimiento", groupedForms: "Información del Estudiante y Consentimientos",
         btnForms: "Completar Formularios Ahora", btnExtra: "Completar Reconocimiento Aquí", btnUploads: "Subir Documentos Faltantes", btnBack: "← Buscar Otro Estudiante", 
         submitted: "Enviado", notSubmitted: "No Enviado", missing: "Faltante", warning24h: "Las nuevas cargas pueden tardar 24 horas en mostrarse como enviadas.", multipleSub: "Puede enviar varias veces si es necesario.",
-        am: "Método de entrega por la mañana", pm: "Método de recogida por la tarde", change: "Cambiar transporte", complete: "Confirmar transporte", guideTitle: "Ver información de paradas",
+        am: "Método de entrega por la mañana", pm: "Método de recogida por la tarde", change: "Cambiar transporte", complete: "Confirmar transporte", guideTitle: "Ver información de todas las paradas",
         meet: "Encuentro", drop: "Llegada", arrive: "Llegar", pick: "Recoger", self: "POR CUENTA PROPIA",
         docs: { "Parent Med": "Autorización Médica de Padres", "Phys Med": "Autorización Médica del Médico", "Meningitis": "Reconocimiento de Vacuna contra la Meningitis", "Report Card": "Boleta (7º Grado)", "Immuno": "Registro de Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
       },
@@ -194,7 +194,7 @@
       if (currentResults) render(currentResults);
     }
 
-    // Helper to build stop descriptions in the current language
+    // Dynamic Stop Translator
     function translateStops(stopList, t) {
       return stopList.map(s => {
         if (s.type === "SELF") {
@@ -202,6 +202,15 @@
         }
         return `<li><strong>${s.name}:</strong> ${t.meet} ${s.am} / ${t.drop} ${s.pm} ${s.extra || ''}.</li>`;
       }).join('');
+    }
+
+    // MANDATORY FALLBACK Logic
+    function manualFallback() {
+      const dob = document.getElementById('dob').value;
+      const email = document.getElementById('email').value;
+      const target = `${SCRIPT_URL}?dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
+      const chooserUrl = `https://accounts.google.com/AccountChooser?continue=${encodeURIComponent(target)}`;
+      window.open(chooserUrl, '_blank');
     }
 
     function runSearch() {
@@ -214,6 +223,8 @@
       btn.disabled = true;
       btn.innerText = t.btnSearching;
       errBox.classList.add('hidden');
+      const oldScript = document.getElementById('jsonp_loader');
+      if(oldScript) oldScript.remove();
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
