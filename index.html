@@ -125,7 +125,7 @@
       es: {
         title: "Portal Estudiantil BEAM", dob: "Fecha de Nacimiento", email: "Correo Electrónico", btnCheck: "Verificar Estado", btnSearching: "Buscando...",
         errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
-        errorConn: "Problema de conexión. No pudimos verificar automáticamente.", manualBtn: "Abrir Portal Seguro ↗",
+        errorConn: "Problema de conexión.", manualBtn: "Abrir Portal Seguro ↗",
         success: "🎉 ¡El registro está completo!", timestamp: "Estado al",
         sectForms: "Formularios de Registro", sectUploads: "Carga de Documentos", sectTrans: "Transporte",
         btnForms: "Completar Formularios Ahora", btnUploads: "Subir Documentos Faltantes", btnBack: "← Buscar Otro Estudiante", 
@@ -135,7 +135,6 @@
         guideTitle: "Ver información de todas las paradas",
         docs: { "Parent Med": "Autorización Médica de Padres", "Phys Med": "Autorización Médica del Médico", "Meningitis": "Reconocimiento de Vacuna contra la Meningitis", "Report Card": "Boleta (7º Grado)", "Immuno": "Registro de Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
       }
-      // Chinese and Arabic can be maintained/added here
     };
 
     let currentLang = 'en';
@@ -172,28 +171,20 @@
       const btn = document.getElementById('btn');
       const errBox = document.getElementById('error');
       const t = TRANSLATIONS[currentLang];
-
       if(!dob || !email) return;
-
       btn.disabled = true;
       btn.innerText = t.btnSearching;
       errBox.classList.add('hidden');
-
-      const oldScript = document.getElementById('jsonp_loader');
-      if(oldScript) oldScript.remove();
-
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
       script.setAttribute('crossorigin', 'anonymous');
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
-      
       script.onerror = function() {
         btn.disabled = false;
         btn.innerText = t.btnCheck;
         errBox.innerHTML = `<strong>${t.errorConn}</strong><br><button onclick="manualFallback()" class="btn btn-dark btn-sm fw-bold w-100 mt-2">${t.manualBtn}</button>`;
         errBox.classList.remove('hidden');
       };
-
       document.body.appendChild(script);
     }
 
@@ -223,7 +214,7 @@
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
         
         let transpoComplete = true;
-        if (s.program === "Discovery") {
+        if (s.program === "Discovery" && s.transportation) {
           if (!s.transportation.morning || s.transportation.morning === "Missing" || !s.transportation.afternoon || s.transportation.afternoon === "Missing") transpoComplete = false;
         }
 
@@ -231,7 +222,7 @@
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
         html += `<p class="timestamp text-center small text-muted">${t.timestamp}: ${dateStr}</p>`;
         
-        // Forms Table
+        // Forms
         html += `<div class="section-box section-forms"><div class="section-title">${t.sectForms}</div><table class="table table-sm mb-0"><tr><td class="doc-name">Registration & Consent Forms</td><td class="text-end status-Submitted">${t.submitted}</td></tr></table></div>`;
 
         // Uploads
@@ -243,21 +234,24 @@
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white">${t.btnUploads}</a>`;
         html += `</div>`;
 
-        // Transportation
+        // Transportation (Updated with green choices)
         if (s.program === "Discovery" && s.transportation) {
             const isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
             const detailsList = isUT ? SITE_DETAILS_UPTOWN : SITE_DETAILS_DOWNTOWN;
-            const hasSub = transpoComplete;
+            
+            const mRaw = s.transportation.morning || "Missing";
+            const aRaw = s.transportation.afternoon || "Missing";
+            const mIsMissing = (mRaw === "Missing" || mRaw === "");
+            const aIsMissing = (aRaw === "Missing" || aRaw === "");
 
             html += `<div class="section-box section-transpo">
                       <div class="section-title">${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
                       <table class="table table-sm mb-0">
-                        <tr><td class="doc-name">${t.am}</td><td class="${!s.transportation.morning || s.transportation.morning === 'Missing' ? 'status-Missing' : ''} text-end">${s.transportation.morning || t.missing}</td></tr>
-                        <tr><td class="doc-name">${t.pm}</td><td class="${!s.transportation.afternoon || s.transportation.afternoon === 'Missing' ? 'status-Missing' : ''} text-end">${s.transportation.afternoon || t.missing}</td></tr>
+                        <tr><td class="doc-name">${t.am}</td><td class="${mIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">${mIsMissing ? t.missing : mRaw}</td></tr>
+                        <tr><td class="doc-name">${t.pm}</td><td class="${aIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">${aIsMissing ? t.missing : aRaw}</td></tr>
                       </table>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${hasSub ? t.change : t.complete}</a>
-                      
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${transpoComplete ? t.change : t.complete}</a>
                       <details class="transpo-guide">
                         <summary>${t.guideTitle}</summary>
                         <ul>${detailsList.map(item => `<li>${item}</li>`).join('')}</ul>
