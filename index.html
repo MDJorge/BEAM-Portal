@@ -84,31 +84,17 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
     
-    // STOP LISTS
     const STOPS_UPTOWN = {
-        "S1": "W 110th St & Manhattan Ave",
-        "S2": "W 125th St & Amsterdam Ave",
-        "S3": "W 145th St & Amsterdam Ave",
-        "S4": "W 155th St & Amsterdam Ave",
-        "S5": "W 163rd St & Amsterdam Ave",
-        "S6": "W 181st St & Amsterdam Ave",
-        "S7": "Dyckman St & Nagle Ave",
-        "S8": "W 231st St & Broadway",
-        "S9": "W 125th St & Malcolm X Blvd",
-        "S10": "W 135th St & Malcolm X Blvd",
-        "S11": "W 145th St & Malcolm X Blvd"
+        "S1": "W 110th St & Manhattan Ave", "S2": "W 125th St & Amsterdam Ave", "S3": "W 145th St & Amsterdam Ave",
+        "S4": "W 155th St & Amsterdam Ave", "S5": "W 163rd St & Amsterdam Ave", "S6": "W 181st St & Amsterdam Ave",
+        "S7": "Dyckman St & Nagle Ave", "S8": "W 231st St & Broadway", "S9": "W 125th St & Malcolm X Blvd",
+        "S10": "W 135th St & Malcolm X Blvd", "S11": "W 145th St & Malcolm X Blvd"
     };
 
     const STOPS_DOWNTOWN = {
-        "S1": "Allen St & Delancey St",
-        "S2": "E Houston St & Ave C",
-        "S3": "E 14th St & 1st Ave",
-        "S4": "E 23rd St & 1st Ave",
-        "S5": "E 34th St & 2nd Ave",
-        "S6": "E 42nd St & 2nd Ave",
-        "S7": "W 14th St & 7th Ave",
-        "S8": "W 23rd St & 7th Ave",
-        "S9": "W 34th St & 7th Ave",
+        "S1": "Allen St & Delancey St", "S2": "E Houston St & Ave C", "S3": "E 14th St & 1st Ave",
+        "S4": "E 23rd St & 1st Ave", "S5": "E 34th St & 2nd Ave", "S6": "E 42nd St & 2nd Ave",
+        "S7": "W 14th St & 7th Ave", "S8": "W 23rd St & 7th Ave", "S9": "W 34th St & 7th Ave",
         "S10": "W 42th St & 8th Ave"
     };
 
@@ -230,7 +216,6 @@
         const documentData = s.details.filter(d => !surveyItems.includes(d.name) && !extraItems.includes(d.name));
         
         const missingConsents = consentData.filter(d => d.status !== "Submitted").length;
-        const missingExtra = extraData.filter(d => d.status !== "Submitted").length;
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
         
         let transpoComplete = true;
@@ -266,7 +251,10 @@
 
         // TRANSPORTATION LOGIC
         if (s.program === "Discovery" && s.transportation) {
-            const isUT = (s.transportation.location || "").includes("UT");
+            // Updated location check to look for the full word "Uptown"
+            const locStr = (s.transportation.location || "").toLowerCase();
+            const isUT = locStr.includes("uptown");
+            const progName = isUT ? "Uptown" : "Downtown";
             const stops = isUT ? STOPS_UPTOWN : STOPS_DOWNTOWN;
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
             
@@ -278,7 +266,7 @@
             const hasSub = (mCode !== "" && mCode !== "Missing") && (aCode !== "" && aCode !== "Missing");
 
             html += `<div class="section-box section-transpo">
-                      <div class="section-title">${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
+                      <div class="section-title">${t.sectTrans} (${progName})</div>
                       <table class="table table-sm mb-0">
                         <tr><td class="doc-name">${t.am}</td><td class="${mCode === '' ? 'status-Missing' : ''} text-end">${mText}</td></tr>
                         <tr><td class="doc-name">${t.pm}</td><td class="${aCode === '' ? 'status-Missing' : ''} text-end">${aText}</td></tr>
