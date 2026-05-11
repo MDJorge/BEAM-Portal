@@ -135,7 +135,7 @@
         dob: "Fecha de Nacimiento del Estudiante", email: "Correo Electrónico", emailPlaceholder: "tutor@correo.com",
         btnCheck: "Verificar Estado", btnSearching: "Buscando...",
         errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
-        errorConn: "Probleما في الاتصال. لم نتمكن من التحقق تلقائياً.", manualBtn: "Abrir Portal Seguro ↗",
+        errorConn: "Problema de conexión.", manualBtn: "Abrir Portal Seguro ↗",
         success: "🎉 ¡El registro está completo!", 
         incomplete: "⚠️ Su registro aún está en progreso. Por favor complete los elementos faltantes a continuación.",
         timestamp: "Estado al",
@@ -241,7 +241,6 @@
       script.onerror = function() {
         btn.disabled = false;
         btn.innerText = t.btnCheck;
-        // Restored manualFallback trigger on error
         errBox.innerHTML = `<strong>${t.errorConn}</strong><br><button onclick="manualFallback()" class="btn btn-dark btn-sm fw-bold w-100 mt-2">${t.manualBtn}</button>`;
         errBox.classList.remove('hidden');
       };
@@ -279,28 +278,45 @@
       let html = '';
       results.forEach(s => {
         const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
-        const documentData = s.details.filter(d => !surveyItems.includes(d.name) && d.name !== "Meningitis");
+        const isBSA = (s.program === "BSA");
+        
+        // Restore Meningitis for BSA specifically
+        const documentData = s.details.filter(d => {
+            if (surveyItems.includes(d.name)) return false;
+            if (d.name === "Meningitis" && !isBSA) return false;
+            return true;
+        });
+
         const missingConsents = s.details.filter(d => surveyItems.includes(d.name) && d.status !== "Submitted").length;
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
+        
         let transpoComplete = true;
         if (s.program === "Discovery" && s.transportation) {
           if (!s.transportation.morning || s.transportation.morning === "Missing" || !s.transportation.afternoon || s.transportation.afternoon === "Missing") transpoComplete = false;
         }
+
         const isFullyComplete = (missingConsents === 0 && missingDocs === 0 && transpoComplete);
+        
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
+        
         if (isFullyComplete) {
           html += `<div class="success-banner">${t.success}</div>`;
         } else {
           html += `<div class="warning-banner-box">${t.incomplete}</div>`;
         }
+        
         html += `<p class="timestamp text-center small text-muted">${t.timestamp}: ${dateStr}</p>`;
+        
+        // 1. FORMS
         html += `<div class="section-box section-forms">
                   <div class="section-title">${t.sectForms}</div>
                   <table class="table table-sm mb-0">
                     <tr><td class="doc-name">${t.regFormsLabel}</td><td class="text-end status-Submitted">${t.submitted}</td></tr>
                   </table>
                 </div>`;
+
+        // 2. UPLOADS
         html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
         documentData.forEach(d => {
             html += `<tr><td class="doc-name">${t.docs[d.name] || d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
@@ -308,6 +324,8 @@
         html += `</table>`;
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white">${t.btnUploads}</a>`;
         html += `</div>`;
+
+        // 3. TRANSPORTATION
         if (s.program === "Discovery" && s.transportation) {
             const isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
