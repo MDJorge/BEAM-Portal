@@ -84,7 +84,6 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
     
-    // Stop Templates (Simplified for dynamic translation)
     const STOPS_UPTOWN = [
         { name: "New Design HS (350 Grand St)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
         { name: "Prospect Park (B/Q)", am: "8:20 AM", pm: "4:40 PM", extra: "(Lincoln Market)" },
@@ -136,7 +135,7 @@
         dob: "Fecha de Nacimiento del Estudiante", email: "Correo Electrónico", emailPlaceholder: "tutor@correo.com",
         btnCheck: "Verificar Estado", btnSearching: "Buscando...",
         errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
-        errorConn: "Problema de conexión.", manualBtn: "Abrir Portal Seguro ↗",
+        errorConn: "Probleما في الاتصال. لم نتمكن من التحقق تلقائياً.", manualBtn: "Abrir Portal Seguro ↗",
         success: "🎉 ¡El registro está completo!", 
         incomplete: "⚠️ Su registro aún está en progreso. Por favor complete los elementos faltantes a continuación.",
         timestamp: "Estado al",
@@ -203,20 +202,24 @@
       currentLang = document.getElementById('langSelect').value;
       const t = TRANSLATIONS[currentLang];
       document.body.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
-      
-      // Home Page Translations
       document.getElementById('t-title').innerText = t.title;
       document.getElementById('t-subtitle').innerText = t.subtitle;
       document.getElementById('t-dob').innerText = t.dob;
       document.getElementById('t-email').innerText = t.email;
       document.getElementById('email').placeholder = t.emailPlaceholder;
       document.getElementById('btn').innerText = t.btnCheck;
-      
-      // Results Page Translations
       document.getElementById('t-res-title').innerText = t.title;
       document.getElementById('t-back').innerText = t.btnBack;
-      
       if (currentResults) render(currentResults);
+    }
+
+    // MANDATORY FALLBACK: Do not remove
+    function manualFallback() {
+      const dob = document.getElementById('dob').value;
+      const email = document.getElementById('email').value;
+      const target = `${SCRIPT_URL}?dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
+      const chooserUrl = `https://accounts.google.com/AccountChooser?continue=${encodeURIComponent(target)}`;
+      window.open(chooserUrl, '_blank');
     }
 
     function runSearch() {
@@ -229,6 +232,8 @@
       btn.disabled = true;
       btn.innerText = t.btnSearching;
       errBox.classList.add('hidden');
+      const oldScript = document.getElementById('jsonp_loader');
+      if(oldScript) oldScript.remove();
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
       script.setAttribute('crossorigin', 'anonymous');
@@ -236,6 +241,7 @@
       script.onerror = function() {
         btn.disabled = false;
         btn.innerText = t.btnCheck;
+        // Restored manualFallback trigger on error
         errBox.innerHTML = `<strong>${t.errorConn}</strong><br><button onclick="manualFallback()" class="btn btn-dark btn-sm fw-bold w-100 mt-2">${t.manualBtn}</button>`;
         errBox.classList.remove('hidden');
       };
@@ -262,51 +268,39 @@
       const t = TRANSLATIONS[currentLang];
       document.getElementById('btn').disabled = false;
       document.getElementById('btn').innerText = t.btnCheck;
-
       if (!results || results.length === 0) {
         document.getElementById('error').innerHTML = t.errorNoStudent;
         document.getElementById('error').classList.remove('hidden');
         return;
       }
       document.getElementById('error').classList.add('hidden');
-      
       const today = new Date();
       const dateStr = (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear() + ' 6:00 AM EST';
       let html = '';
-      
       results.forEach(s => {
         const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
         const documentData = s.details.filter(d => !surveyItems.includes(d.name) && d.name !== "Meningitis");
         const missingConsents = s.details.filter(d => surveyItems.includes(d.name) && d.status !== "Submitted").length;
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
-        
         let transpoComplete = true;
         if (s.program === "Discovery" && s.transportation) {
           if (!s.transportation.morning || s.transportation.morning === "Missing" || !s.transportation.afternoon || s.transportation.afternoon === "Missing") transpoComplete = false;
         }
-
         const isFullyComplete = (missingConsents === 0 && missingDocs === 0 && transpoComplete);
-
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
-        
         if (isFullyComplete) {
           html += `<div class="success-banner">${t.success}</div>`;
         } else {
           html += `<div class="warning-banner-box">${t.incomplete}</div>`;
         }
-        
         html += `<p class="timestamp text-center small text-muted">${t.timestamp}: ${dateStr}</p>`;
-        
-        // 1. FORMS
         html += `<div class="section-box section-forms">
                   <div class="section-title">${t.sectForms}</div>
                   <table class="table table-sm mb-0">
                     <tr><td class="doc-name">${t.regFormsLabel}</td><td class="text-end status-Submitted">${t.submitted}</td></tr>
                   </table>
                 </div>`;
-
-        // 2. UPLOADS
         html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
         documentData.forEach(d => {
             html += `<tr><td class="doc-name">${t.docs[d.name] || d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
@@ -314,8 +308,6 @@
         html += `</table>`;
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white">${t.btnUploads}</a>`;
         html += `</div>`;
-
-        // 3. TRANSPORTATION
         if (s.program === "Discovery" && s.transportation) {
             const isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
@@ -324,7 +316,6 @@
             const aRaw = s.transportation.afternoon || "Missing";
             const mIsMissing = (mRaw === "Missing" || mRaw === "");
             const aIsMissing = (aRaw === "Missing" || aRaw === "");
-
             html += `<div class="section-box section-transpo">
                       <div class="section-title">${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
                       <table class="table table-sm mb-0">
