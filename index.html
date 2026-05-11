@@ -29,6 +29,12 @@
     .success-banner { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
     .transpo-guide { font-size: 0.8rem; background: #fff; border: 1px solid #dee2e6; border-radius: 6px; padding: 10px; margin-top: 10px; }
     .transpo-guide summary { cursor: pointer; font-weight: bold; color: #004a99; outline: none; }
+    
+    /* Prominent Program Label Styling */
+    .program-banner { font-size: 1.1rem; font-weight: 800; padding: 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; display: block; margin: 10px auto; width: fit-content; min-width: 200px; }
+    .prog-discovery { background-color: #0dcaf0; color: #004a99; border: 2px solid #0dcaf0; }
+    .prog-summer-away { background-color: #6f42c1; color: white; border: 2px solid #6f42c1; }
+
     body[dir="rtl"] { text-align: right; }
     body[dir="rtl"] .lang-toggle { left: 15px; right: auto; }
     body[dir="rtl"] .text-end { text-align: left !important; }
@@ -284,8 +290,13 @@
 
         const isFullyComplete = (missingConsents === 0 && missingExtra === 0 && missingDocs === 0 && transComplete);
 
+        // Prominent Student Name
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
-        html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
+        
+        // NEW: Prominent Program Banner
+        const progClass = (s.program === "Discovery") ? "prog-discovery" : "prog-summer-away";
+        html += `<div class="text-center"><span class="program-banner ${progClass}">${s.program}</span></div>`;
+
         if (isFullyComplete) html += `<div class="success-banner">${t.success}</div>`;
         else html += `<div class="warning-banner-box">${t.incomplete}</div>`;
         html += `<p class="timestamp text-center small text-muted">${t.timestamp}: ${dateStr}</p>`;
