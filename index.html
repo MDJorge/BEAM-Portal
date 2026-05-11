@@ -85,8 +85,32 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
     
-    const SITE_DETAILS_UPTOWN = [ "SELF/FAMILY: New Design HS (350 Grand St). Arrive 8-9 AM / Pick up 4:15 PM.", "Prospect Park (B/Q): Meet 8:20 AM / Drop off 4:40 PM (Lincoln Market).", "Canarsie-Rockaway Pkwy (L): Meet 8:09 AM / Drop off 4:51 PM (Armando's Pizza).", "Church Ave (B/Q): Meet 8:21 AM / Drop off 4:39 PM (El Centenario Pizza).", "Crown Hts-Utica (3/4): Meet 8:10 AM / Drop off 4:50 PM (Elevator entrance).", "Greenpoint Ave (G): Meet 8:11 AM / Drop off 4:49 PM (Pelicana Chicken).", "Myrtle-Willoughby Aves (G): Meet 8:12 AM / Drop off 4:48 PM (Falkowitz Cakes).", "36th St (D/N/R): Meet 8:20 AM / Drop off 4:40 PM (MTA Agent Booth).", "111th (7): Meet 7:55 AM / Drop off 5:05 PM (La Gitana #2).", "Grand Ave/Newtown (M/R): Meet 8:00 AM / Drop off 5:00 PM (Dunkin' Donuts)." ];
-    const SITE_DETAILS_DOWNTOWN = [ "SELF/FAMILY: Comp Sci High (447 Wales Ave). Arrive 8-9 AM / Pick up 4:15 PM.", "161st St-Yankee Stadium (4/B/D): Meet 8:14 AM / Drop off 4:46 PM (Heritage House).", "3rd Ave-149th St (2/5): Meet 8:28 AM / Drop off 4:32 PM (Bank of America).", "Burnside Ave (4): Meet 8:23 AM / Drop off 4:37 PM (Burnside Deli).", "Gun Hill Rd (2/5): Meet 8:03 AM / Drop off 4:57 PM (Dunkin' Donuts).", "Hunts Point Ave (6): Meet 8:25 AM / Drop off 4:35 PM (Popeyes).", "Kingsbridge Rd (4): Meet 8:16 AM / Drop off 4:44 PM (Jerome Pharmacy).", "Pelham Pkwy (2/5): Meet 8:12 AM / Drop off 4:48 PM (CVS Pharmacy).", "Tremont Ave (B/D): Meet 8:21 AM / Drop off 4:39 PM (Tremont Optometrist).", "West Farms Sq (2/5): Meet 8:20 AM / Drop off 4:40 PM (West Farms Deli)." ];
+    // Stop Data (Structured for translation)
+    const STOPS_UPTOWN = [
+        { name: "New Design HS (350 Grand St)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
+        { name: "Prospect Park (B/Q)", am: "8:20 AM", pm: "4:40 PM", extra: "(Lincoln Market)" },
+        { name: "Canarsie-Rockaway Pkwy (L)", am: "8:09 AM", pm: "4:51 PM", extra: "(Armando's Pizza)" },
+        { name: "Church Ave (B/Q)", am: "8:21 AM", pm: "4:39 PM", extra: "(El Centenario Pizza)" },
+        { name: "Crown Hts-Utica (3/4)", am: "8:10 AM", pm: "4:50 PM", extra: "(Elevator entrance)" },
+        { name: "Greenpoint Ave (G)", am: "8:11 AM", pm: "4:49 PM", extra: "(Pelicana Chicken)" },
+        { name: "Myrtle-Willoughby Aves (G)", am: "8:12 AM", pm: "4:48 PM", extra: "(Falkowitz Cakes)" },
+        { name: "36th St (D/N/R)", am: "8:20 AM", pm: "4:40 PM", extra: "(MTA Agent Booth)" },
+        { name: "111th (7)", am: "7:55 AM", pm: "5:05 PM", extra: "(La Gitana #2)" },
+        { name: "Grand Ave/Newtown (M/R)", am: "8:00 AM", pm: "5:00 PM", extra: "(Dunkin' Donuts)" }
+    ];
+
+    const STOPS_DOWNTOWN = [
+        { name: "Comp Sci High (447 Wales Ave)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
+        { name: "161st St-Yankee Stadium (4/B/D)", am: "8:14 AM", pm: "4:46 PM", extra: "(Heritage House)" },
+        { name: "3rd Ave-149th St (2/5)", am: "8:28 AM", pm: "4:32 PM", extra: "(Bank of America)" },
+        { name: "Burnside Ave (4)", am: "8:23 AM", pm: "4:37 PM", extra: "(Burnside Deli)" },
+        { name: "Gun Hill Rd (2/5)", am: "8:03 AM", pm: "4:57 PM", extra: "(Dunkin' Donuts)" },
+        { name: "Hunts Point Ave (6)", am: "8:25 AM", pm: "4:35 PM", extra: "(Popeyes)" },
+        { name: "Kingsbridge Rd (4)", am: "8:16 AM", pm: "4:44 PM", extra: "(Jerome Pharmacy)" },
+        { name: "Pelham Pkwy (2/5)", am: "8:12 AM", pm: "4:48 PM", extra: "(CVS Pharmacy)" },
+        { name: "Tremont Ave (B/D)", am: "8:21 AM", pm: "4:39 PM", extra: "(Tremont Optometrist)" },
+        { name: "West Farms Sq (2/5)", am: "8:20 AM", pm: "4:40 PM", extra: "(West Farms Deli)" }
+    ];
 
     const TRANSLATIONS = {
       en: {
@@ -100,6 +124,7 @@
         btnForms: "Complete Forms Now", btnExtra: "Complete Acknowledgement Here", btnUploads: "Upload Missing Documents", btnBack: "← Search Another Student", 
         submitted: "Submitted", notSubmitted: "Not Submitted", missing: "Missing", warning24h: "New uploads may take 24 hours to show as submitted.", multipleSub: "You can submit multiple times if needed.",
         am: "Morning Drop Off Method", pm: "Afternoon Pick Up Method", change: "Change Transportation Method", complete: "Confirm Transportation Method", guideTitle: "View All Stop Information",
+        meet: "Meet", drop: "Drop off", arrive: "Arrive", pick: "Pick up", self: "SELF/FAMILY",
         docs: { "Parent Med": "Parent Medical Release", "Phys Med": "Physician's Medical Release", "Meningitis": "Meningitis Vaccine Acknowledgement", "Report Card": "7th Grade Report Card", "Immuno": "Immunization Record", "Ins Front": "Insurance Card (Front)", "Ins Back": "Insurance Card (Back)" }
       },
       es: {
@@ -113,6 +138,7 @@
         btnForms: "Completar Formularios Ahora", btnExtra: "Completar Reconocimiento Aquí", btnUploads: "Subir Documentos Faltantes", btnBack: "← Buscar Otro Estudiante", 
         submitted: "Enviado", notSubmitted: "No Enviado", missing: "Faltante", warning24h: "Las nuevas cargas pueden tardar 24 horas en mostrarse como enviadas.", multipleSub: "Puede enviar varias veces si es necesario.",
         am: "Método de entrega por la mañana", pm: "Método de recogida por la tarde", change: "Cambiar transporte", complete: "Confirmar transporte", guideTitle: "Ver información de paradas",
+        meet: "Encuentro", drop: "Llegada", arrive: "Llegar", pick: "Recoger", self: "POR CUENTA PROPIA",
         docs: { "Parent Med": "Autorización Médica de Padres", "Phys Med": "Autorización Médica del Médico", "Meningitis": "Reconocimiento de Vacuna contra la Meningitis", "Report Card": "Boleta (7º Grado)", "Immuno": "Registro de Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
       },
       zh: {
@@ -126,6 +152,7 @@
         btnForms: "立即填写表格", btnExtra: "在此完成确认", btnUploads: "上传缺失文件", btnBack: "← 搜索另一名学生", 
         submitted: "已提交", notSubmitted: "未提交", missing: "缺失", warning24h: "新上传的文件可能需要 24 小时才能显示为已提交。", multipleSub: "如果需要，您可以多次提交。",
         am: "上午送达方式", pm: "下午接送方式", change: "更改交通方式", complete: "确认交通方式", guideTitle: "查看所有停靠点信息",
+        meet: "见面时间", drop: "送达时间", arrive: "到达", pick: "接送", self: "自行/家人",
         docs: { "Parent Med": "父母医疗许可", "Phys Med": "医生医疗许可", "Meningitis": "脑膜炎疫苗确认书", "Report Card": "七年级成绩单", "Immuno": "免疫接种记录", "Ins Front": "保险卡（正面）", "Ins Back": "保险卡（背面）" }
       },
       ar: {
@@ -139,6 +166,7 @@
         btnForms: "أكمل النماذج الآن", btnExtra: "أكمل الإقرار هنا", btnUploads: "تحميل المستندات المفقودة", btnBack: "← ابحث عن طالب آخر", 
         submitted: "تم الإرسال", notSubmitted: "لم يتم الإرسال", missing: "مفقود", warning24h: "قد يستغرق ظهور الملفات المحملة حديثاً 24 ساعة.", multipleSub: "يمكنك الإرسال أكثر من مرة إذا لزم الأمر.",
         am: "طريقة التوصيل الصباحية", pm: "طريقة الاستلام المسائية", change: "تغيير وسيلة المواصلات", complete: "تأكيد وسيلة المواصلات", guideTitle: "عرض جميع معلومات التوقف",
+        meet: "لقاء", drop: "توصيل", arrive: "وصول", pick: "استلام", self: "ذاتي/عائلي",
         docs: { "Parent Med": "التصريح الطبي لولي الأمر", "Phys Med": "التصريح الطبي للطبيب", "Meningitis": "إقرار لقاح التهاب السحايا", "Report Card": "تقرير درجات الصف السابع", "Immuno": "سجل التطعيمات", "Ins Front": "بطاقة التأمين (الأمام)", "Ins Back": "بطاقة التأمين (الخلف)" }
       }
     };
@@ -166,12 +194,14 @@
       if (currentResults) render(currentResults);
     }
 
-    function manualFallback() {
-      const dob = document.getElementById('dob').value;
-      const email = document.getElementById('email').value;
-      const target = `${SCRIPT_URL}?dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
-      const chooserUrl = `https://accounts.google.com/AccountChooser?continue=${encodeURIComponent(target)}`;
-      window.open(chooserUrl, '_blank');
+    // Helper to build stop descriptions in the current language
+    function translateStops(stopList, t) {
+      return stopList.map(s => {
+        if (s.type === "SELF") {
+          return `<li><strong>${t.self}:</strong> ${s.name}. ${t.arrive} ${s.am} / ${t.pick} ${s.pm}.</li>`;
+        }
+        return `<li><strong>${s.name}:</strong> ${t.meet} ${s.am} / ${t.drop} ${s.pm} ${s.extra || ''}.</li>`;
+      }).join('');
     }
 
     function runSearch() {
@@ -184,11 +214,8 @@
       btn.disabled = true;
       btn.innerText = t.btnSearching;
       errBox.classList.add('hidden');
-      const oldScript = document.getElementById('jsonp_loader');
-      if(oldScript) oldScript.remove();
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
-      script.setAttribute('crossorigin', 'anonymous');
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
       script.onerror = function() {
         btn.disabled = false;
@@ -284,10 +311,10 @@
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-dark">${t.btnUploads}</a>`;
         html += `</div>`;
 
-        // 4. TRANSPORTATION (Discovery Only)
+        // 4. TRANSPORTATION
         if (s.program === "Discovery" && s.transportation) {
             const isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
-            const detailsList = isUT ? SITE_DETAILS_UPTOWN : SITE_DETAILS_DOWNTOWN;
+            const stopList = isUT ? STOPS_UPTOWN : STOPS_DOWNTOWN;
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
             
             const amVal = s.transportation.morning || "Missing";
@@ -302,7 +329,7 @@
                         <tr><td class="doc-name">${t.pm}</td><td class="${pmClass} text-end">${pmVal === "Missing" ? t.missing : pmVal}</td></tr>
                       </table>
                       <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${transComplete ? t.change : t.complete}</a>
-                      <details class="transpo-guide"><summary>${t.guideTitle}</summary><ul>${detailsList.map(i => `<li>${i}</li>`).join('')}</ul></details>
+                      <details class="transpo-guide"><summary>${t.guideTitle}</summary><ul>${translateStops(stopList, t)}</ul></details>
                     </div>`;
         }
         html += `<hr class="my-4">`;
