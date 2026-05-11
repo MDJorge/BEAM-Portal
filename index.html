@@ -92,19 +92,6 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
     
     const STOPS_UPTOWN = [
-        { name: "New Design HS (350 Grand St)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
-        { name: "Prospect Park (B/Q)", am: "8:20 AM", pm: "4:40 PM", extra: "(Lincoln Market)" },
-        { name: "Canarsie-Rockaway Pkwy (L)", am: "8:09 AM", pm: "4:51 PM", extra: "(Armando's Pizza)" },
-        { name: "Church Ave (B/Q)", am: "8:21 AM", pm: "4:39 PM", extra: "(El Centenario Pizza)" },
-        { name: "Crown Hts-Utica (3/4)", am: "8:10 AM", pm: "4:50 PM", extra: "(Elevator entrance)" },
-        { name: "Greenpoint Ave (G)", am: "8:11 AM", pm: "4:49 PM", extra: "(Pelicana Chicken)" },
-        { name: "Myrtle-Willoughby Aves (G)", am: "8:12 AM", pm: "4:48 PM", extra: "(Falkowitz Cakes)" },
-        { name: "36th St (D/N/R)", am: "8:20 AM", pm: "4:40 PM", extra: "(MTA Agent Booth)" },
-        { name: "111th (7)", am: "7:55 AM", pm: "5:05 PM", extra: "(La Gitana #2)" },
-        { name: "Grand Ave/Newtown (M/R)", am: "8:00 AM", pm: "5:00 PM", extra: "(Dunkin' Donuts)" }
-    ];
-
-    const STOPS_DOWNTOWN = [
         { name: "Comp Sci High (447 Wales Ave)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
         { name: "161st St-Yankee Stadium (4/B/D)", am: "8:14 AM", pm: "4:46 PM", extra: "(Heritage House)" },
         { name: "3rd Ave-149th St (2/5)", am: "8:28 AM", pm: "4:32 PM", extra: "(Bank of America)" },
@@ -115,6 +102,19 @@
         { name: "Pelham Pkwy (2/5)", am: "8:12 AM", pm: "4:48 PM", extra: "(CVS Pharmacy)" },
         { name: "Tremont Ave (B/D)", am: "8:21 AM", pm: "4:39 PM", extra: "(Tremont Optometrist)" },
         { name: "West Farms Sq (2/5)", am: "8:20 AM", pm: "4:40 PM", extra: "(West Farms Deli)" }
+    ];
+
+    const STOPS_DOWNTOWN = [
+        { name: "New Design HS (350 Grand St)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
+        { name: "Prospect Park (B/Q)", am: "8:20 AM", pm: "4:40 PM", extra: "(Lincoln Market)" },
+        { name: "Canarsie-Rockaway Pkwy (L)", am: "8:09 AM", pm: "4:51 PM", extra: "(Armando's Pizza)" },
+        { name: "Church Ave (B/Q)", am: "8:21 AM", pm: "4:39 PM", extra: "(El Centenario Pizza)" },
+        { name: "Crown Hts-Utica (3/4)", am: "8:10 AM", pm: "4:50 PM", extra: "(Elevator entrance)" },
+        { name: "Greenpoint Ave (G)", am: "8:11 AM", pm: "4:49 PM", extra: "(Pelicana Chicken)" },
+        { name: "Myrtle-Willoughby Aves (G)", am: "8:12 AM", pm: "4:48 PM", extra: "(Falkowitz Cakes)" },
+        { name: "36th St (D/N/R)", am: "8:20 AM", pm: "4:40 PM", extra: "(MTA Agent Booth)" },
+        { name: "111th (7)", am: "7:55 AM", pm: "5:05 PM", extra: "(La Gitana #2)" },
+        { name: "Grand Ave/Newtown (M/R)", am: "8:00 AM", pm: "5:00 PM", extra: "(Dunkin' Donuts)" }
     ];
 
     //Must have FOUR translation languages (english, spanish, chinese, arabic)
@@ -303,9 +303,9 @@
         // ADDED: Camp Location Details strictly for Discovery Program
         if (s.program === "Discovery" && s.transportation) {
             if (isUT) {
-                html += `<div class="text-center text-muted fw-bold mb-3" style="font-size: 0.9rem;">Camp Location: Uptown<br>Comp Sci High (447 Wales Ave, Bronx, NY 10455)</div>`;
+                html += `<div class="text-center fw-bold mb-3" style="color: #198754; font-size: 0.9rem;">Camp Location: Uptown<br>Comp Sci High (447 Wales Ave, Bronx, NY 10455)</div>`;
             } else {
-                html += `<div class="text-center text-muted fw-bold mb-3" style="font-size: 0.9rem;">Camp Location: Downtown<br>New Design HS (350 Grand St, New York, NY 10002)</div>`;
+                html += `<div class="text-center fw-bold mb-3" style="color: #198754; font-size: 0.9rem;">Camp Location: Downtown<br>New Design HS (350 Grand St, New York, NY 10002)</div>`;
             }
         }
 
