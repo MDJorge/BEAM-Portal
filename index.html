@@ -12,38 +12,28 @@
     .card-header { background: #004a99; color: white; padding: 20px; border-radius: 12px 12px 0 0; position: relative; }
     .lang-toggle { position: absolute; top: 15px; right: 15px; }
     .form-select-sm { background-color: rgba(255,255,255,0.9); border: none; font-weight: bold; color: #004a99; cursor: pointer; }
-    
-    /* Status Styling */
     .status-Submitted { color: #198754 !important; font-weight: bold; }
     .status-Not-Submitted, .status-Missing { color: #dc3545 !important; font-weight: bold; }
-    
-    /* Standard Section Logic */
     .section-box { border-radius: 8px; padding: 15px; margin-bottom: 15px; border-inline-start: 5px solid #ccc; background: #fff; }
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
     .section-extra { border-inline-start-color: #6f42c1; background: #f8f5ff; } 
     .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } 
     .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } 
-
     .section-title { font-weight: bold; color: #555; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-action { margin-top: 5px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
-    
     .table td { padding: 10px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
     .doc-name { color: #444; font-size: 0.95rem; }
     .doc-link { text-decoration: none; color: #004a99; font-weight: 500; border-bottom: 1px dotted #004a99; }
     .doc-link:hover { color: #002a5c; border-bottom: 1px solid #002a5c; }
-    
     .success-banner { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
     .warning-banner { color: #dc3545; background: #fff5f5; border: 1px dashed #dc3545; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
-    
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
     body[dir="rtl"] { text-align: right; }
     body[dir="rtl"] .text-end { text-align: left !important; }
     body[dir="rtl"] .lang-toggle { left: 15px; right: auto; }
   </style>
 </head>
 <body>
-
   <div id="searchBox" class="card p-0">
     <div class="card-header">
       <div class="lang-toggle">
@@ -70,7 +60,6 @@
       <div id="error" class="alert alert-warning mt-3 text-center hidden" style="font-size: 0.9rem;"></div>
     </div>
   </div>
-
   <div id="results" class="hidden">
     <div class="card p-0">
       <div class="card-header">
@@ -90,10 +79,8 @@
       </div>
     </div>
   </div>
-
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
-
     const TRANSLATIONS = {
       en: {
         title: "BEAM Student Portal", subtitle: "Check your registration progress and missing forms here",
@@ -144,35 +131,26 @@
         docs: { "Parent Med": "الإفراج الطبي لأولياء الأمور", "Phys Med": "الإفراج الطبي للطبيب", "Meningitis": "إقرار لقاح التهاب السحايا", "Report Card": "شهادة الصف السابع", "Immuno": "سجل التطعيم", "Ins Front": "بطاقة التأمين (الأمام)", "Ins Back": "بطاقة التأمين (الخلف)" }
       }
     };
-
     let currentLang = 'en';
     let currentResults = null;
-
     function syncLang(el) {
       document.getElementById('langSelect').value = el.value;
       document.getElementById('langSelectResult').value = el.value;
       changeLanguage();
     }
-
     function changeLanguage() {
       currentLang = document.getElementById('langSelect').value;
       const t = TRANSLATIONS[currentLang];
-      
-      // Update Lock/Search Page
       document.body.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
       document.getElementById('t-title').innerText = t.title;
       document.getElementById('t-subtitle').innerText = t.subtitle;
       document.getElementById('t-dob').innerText = t.dob;
       document.getElementById('t-email').innerText = t.email;
       document.getElementById('btn').innerText = t.btnCheck;
-      
-      // Update Result Page static text
       document.getElementById('t-res-title').innerText = t.title;
       document.getElementById('t-back').innerText = t.btnBack;
-
       if (currentResults) render(currentResults);
     }
-
     function runSearch() {
       const dob = document.getElementById('dob').value;
       const email = document.getElementById('email').value;
@@ -186,63 +164,49 @@
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
       document.body.appendChild(script);
     }
-
     window.receiveData = function(results) {
       const scriptTag = document.getElementById('jsonp_loader');
       if(scriptTag) scriptTag.remove(); 
       currentResults = results;
       render(results);
     };
-
     function render(results) {
       const t = TRANSLATIONS[currentLang];
       document.getElementById('btn').disabled = false;
       document.getElementById('btn').innerText = t.btnCheck;
-
       if (!results || results.length === 0) {
         document.getElementById('error').innerHTML = t.errorNoStudent;
         document.getElementById('error').classList.remove('hidden');
         return;
       }
       document.getElementById('error').classList.add('hidden');
-
       const today = new Date();
       const dateStr = (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear() + ' 6:00 AM EST';
       let html = '';
-
       results.forEach(s => {
         const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
         const extraItems = ["Meningitis"]; 
         const consentData = s.details.filter(d => surveyItems.includes(d.name));
         const extraData = s.details.filter(d => extraItems.includes(d.name));
         const documentData = s.details.filter(d => !surveyItems.includes(d.name) && !extraItems.includes(d.name));
-
         const missingConsents = consentData.filter(d => d.status !== "Submitted").length;
         const missingExtra = extraData.filter(d => d.status !== "Submitted").length;
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
-        const isFullyComplete = (missingConsents === 0 && missingExtra === 0 && missingDocs === 0);
-
+        let transpoComplete = true;
+        if (s.program === "Discovery") {
+          const mStop = s.transportation.morning || "Missing";
+          const aStop = s.transportation.afternoon || "Missing";
+          if (mStop === "Missing" || mStop === "" || aStop === "Missing" || aStop === "") transpoComplete = false;
+        }
+        const isFullyComplete = (missingConsents === 0 && missingDocs === 0 && transpoComplete);
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
-
         if (isFullyComplete) html += `<div class="success-banner">${t.success}</div>`;
         html += `<p class="timestamp text-center">${t.timestamp}: ${dateStr}</p>`;
-
-        html += `<div class="warning-banner">
-                   ⚠️ <strong>${t.warning24h}</strong><br>
-                   <span style="color: #666; font-size: 0.85rem;">${t.multipleSub}</span>
-                 </div>`;
-
-        // 1. REGISTRATION FORMS
-        html += `<div class="section-box section-forms">
-                  <div class="section-title">${t.sectForms}</div>
-                  <table class="table table-sm mb-0">
-                    <tr><td class="doc-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr>
-                  </table>`;
+        html += `<div class="warning-banner">⚠️ <strong>${t.warning24h}</strong><br><span style="color: #666; font-size: 0.85rem;">${t.multipleSub}</span></div>`;
+        html += `<div class="section-box section-forms"><div class="section-title">${t.sectForms}</div><table class="table table-sm mb-0"><tr><td class="doc-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr></table>`;
         if (missingConsents > 0) html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100 mt-2">${t.btnForms}</a>`;
         html += `</div>`;
-
-        // 2. ADDITIONAL ACKNOWLEDGEMENTS
         if (extraData.length > 0) {
           html += `<div class="section-box section-extra"><div class="section-title">${t.sectExtra}</div><table class="table table-sm mb-0">`;
           extraData.forEach(d => {
@@ -252,8 +216,6 @@
           if (missingExtra > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
           html += `</div>`;
         }
-
-        // 3. DOCUMENT UPLOADS
         html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
         documentData.forEach(d => {
             let name = t.docs[d.name] || d.name;
@@ -264,24 +226,13 @@
         html += `</table>`;
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white" style="background-color: #fd7e14; border: none;">${t.btnUploads}</a>`;
         html += `</div>`;
-
-        // 4. TRANSPORTATION
         if (s.program === "Discovery" && s.transportation) {
             const isUptown = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
             const mStop = s.transportation.morning || "Missing";
             const aStop = s.transportation.afternoon || "Missing";
             const hasSub = (mStop !== "Missing" && mStop !== "") && (aStop !== "Missing" && aStop !== "");
-
-            html += `<div class="section-box section-transpo">
-                      <div class="section-title">${t.sectTrans}</div>
-                      <table class="table table-sm mb-0">
-                        <tr><td class="doc-name">${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? t.missing : mStop}</td></tr>
-                        <tr><td class="doc-name">${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? t.missing : aStop}</td></tr>
-                      </table>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${hasSub ? t.change : t.complete}</a>
-                      <div class="mt-2 text-muted text-center" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div>
-                    </div>`;
+            html += `<div class="section-box section-transpo"><div class="section-title">${t.sectTrans}</div><table class="table table-sm mb-0"><tr><td class="doc-name">${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? t.missing : mStop}</td></tr><tr><td class="doc-name">${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? t.missing : aStop}</td></tr></table><a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${hasSub ? t.change : t.complete}</a><div class="mt-2 text-muted text-center" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div></div>`;
         }
         html += `<hr class="my-4">`;
       });
@@ -289,7 +240,6 @@
       document.getElementById('searchBox').classList.add('hidden');
       document.getElementById('results').classList.remove('hidden');
     }
-
     function resetSearch() {
       document.getElementById('dob').value = '';
       document.getElementById('email').value = '';
