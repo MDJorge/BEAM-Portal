@@ -284,8 +284,11 @@
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
 
         let transComplete = true;
+        let isUT = false;
+
         if (s.program === "Discovery" && s.transportation) {
            if (!s.transportation.morning || s.transportation.morning === "Missing" || !s.transportation.afternoon || s.transportation.afternoon === "Missing") transComplete = false;
+           isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
         }
 
         const isFullyComplete = (missingConsents === 0 && missingExtra === 0 && missingDocs === 0 && transComplete);
@@ -297,6 +300,15 @@
         const progClass = (s.program === "Discovery") ? "prog-discovery" : "prog-summer-away";
         html += `<div class="text-center"><span class="program-banner ${progClass}">${s.program}</span></div>`;
 
+        // ADDED: Camp Location Details strictly for Discovery Program
+        if (s.program === "Discovery" && s.transportation) {
+            if (isUT) {
+                html += `<div class="text-center text-muted fw-bold mb-3" style="font-size: 0.9rem;">Camp Location: Uptown<br>Comp Sci High (447 Wales Ave, Bronx, NY 10455)</div>`;
+            } else {
+                html += `<div class="text-center text-muted fw-bold mb-3" style="font-size: 0.9rem;">Camp Location: Downtown<br>New Design HS (350 Grand St, New York, NY 10002)</div>`;
+            }
+        }
+
         if (isFullyComplete) html += `<div class="success-banner">${t.success}</div>`;
         else html += `<div class="warning-banner-box">${t.incomplete}</div>`;
         html += `<p class="timestamp text-center small text-muted">${t.timestamp}: ${dateStr}</p>`;
@@ -307,9 +319,11 @@
                   <div class="section-title">${t.sectForms}</div>
                   <table class="table table-sm mb-0">
                     <tr><td class="doc-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr>
-                  </table>
-                  <a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100">${missingConsents === 0 ? t.btnFormsUpdate : t.btnForms}</a>
-                </div>`;
+                  </table>`;
+        if (missingConsents !== 0) {
+            html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100">${t.btnForms}</a>`;
+        }
+        html += `</div>`;
 
         // 2. ACKNOWLEDGEMENTS
         if (isBSA && extraData.length > 0) {
@@ -319,9 +333,11 @@
           extraData.forEach(d => {
               html += `<tr><td class="doc-name">${t.docs[d.name] || d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
           });
-          html += `</table>
-                  <a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 text-dark" style="background-color: #e0cffc; border: none;">${missingExtra === 0 ? t.btnExtraUpdate : t.btnExtra}</a>
-                </div>`;
+          html += `</table>`;
+          if (missingExtra !== 0) {
+              html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
+          }
+          html += `</div>`;
         }
 
         // 3. UPLOADS
@@ -334,13 +350,14 @@
             else if (d.name === "Phys Med") dName = `<a href="https://drive.google.com/file/d/1NjZ0nRDhwQ4Sf_rYmunnjUnNG5rRHPRD/view?usp=drive_link" target="_blank" class="doc-link">${dName}</a>`;
             html += `<tr><td class="doc-name">${dName}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
         });
-        html += `</table>
-                  <a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 text-dark">${missingDocs === 0 ? t.btnUploadsUpdate : t.btnUploads}</a>
-                </div>`;
+        html += `</table>`;
+        if (missingDocs !== 0) {
+            html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 text-dark">${t.btnUploads}</a>`;
+        }
+        html += `</div>`;
 
         // 4. TRANSPORTATION
         if (s.program === "Discovery" && s.transportation) {
-            const isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
             const stopList = isUT ? STOPS_UPTOWN : STOPS_DOWNTOWN;
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
             const amVal = s.transportation.morning || "Missing";
