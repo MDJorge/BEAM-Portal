@@ -112,6 +112,7 @@
       en: {
         title: "BEAM Student Portal", dob: "Student Birthdate", email: "Email", btnCheck: "Check Status", btnSearching: "Searching...",
         errorNoStudent: "No matching student found.", statusFor: "Status for",
+        errorConn: "Connection Issue. We couldn't verify automatically.", manualBtn: "Launch Secure Portal ↗",
         success: "🎉 Registration is complete!", timestamp: "Status as of",
         sectForms: "Registration Forms", sectUploads: "Document Uploads", sectTrans: "Transportation",
         btnForms: "Complete Forms Now", btnUploads: "Upload Missing Documents", btnBack: "← Search Another Student", 
@@ -124,6 +125,7 @@
       es: {
         title: "Portal Estudiantil BEAM", dob: "Fecha de Nacimiento", email: "Correo Electrónico", btnCheck: "Verificar Estado", btnSearching: "Buscando...",
         errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
+        errorConn: "Problema de conexión. No pudimos verificar automáticamente.", manualBtn: "Abrir Portal Seguro ↗",
         success: "🎉 ¡El registro está completo!", timestamp: "Estado al",
         sectForms: "Formularios de Registro", sectUploads: "Carga de Documentos", sectTrans: "Transporte",
         btnForms: "Completar Formularios Ahora", btnUploads: "Subir Documentos Faltantes", btnBack: "← Buscar Otro Estudiante", 
@@ -156,15 +158,42 @@
       if (currentResults) render(currentResults);
     }
 
+    function manualFallback() {
+      const dob = document.getElementById('dob').value;
+      const email = document.getElementById('email').value;
+      const target = `${SCRIPT_URL}?dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
+      const chooserUrl = `https://accounts.google.com/AccountChooser?continue=${encodeURIComponent(target)}`;
+      window.open(chooserUrl, '_blank');
+    }
+
     function runSearch() {
       const dob = document.getElementById('dob').value;
       const email = document.getElementById('email').value;
+      const btn = document.getElementById('btn');
+      const errBox = document.getElementById('error');
+      const t = TRANSLATIONS[currentLang];
+
       if(!dob || !email) return;
-      document.getElementById('btn').disabled = true;
-      document.getElementById('btn').innerText = TRANSLATIONS[currentLang].btnSearching;
+
+      btn.disabled = true;
+      btn.innerText = t.btnSearching;
+      errBox.classList.add('hidden');
+
+      const oldScript = document.getElementById('jsonp_loader');
+      if(oldScript) oldScript.remove();
+
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
+      script.setAttribute('crossorigin', 'anonymous');
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
+      
+      script.onerror = function() {
+        btn.disabled = false;
+        btn.innerText = t.btnCheck;
+        errBox.innerHTML = `<strong>${t.errorConn}</strong><br><button onclick="manualFallback()" class="btn btn-dark btn-sm fw-bold w-100 mt-2">${t.manualBtn}</button>`;
+        errBox.classList.remove('hidden');
+      };
+
       document.body.appendChild(script);
     }
 
@@ -179,7 +208,7 @@
       const t = TRANSLATIONS[currentLang];
       document.getElementById('btn').disabled = false;
       document.getElementById('btn').innerText = t.btnCheck;
-      if (!results) {
+      if (!results || results.length === 0) {
         document.getElementById('error').innerHTML = t.errorNoStudent;
         document.getElementById('error').classList.remove('hidden');
         return;
