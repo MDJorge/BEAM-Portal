@@ -111,6 +111,8 @@
         { name: "West Farms Sq (2/5)", am: "8:20 AM", pm: "4:40 PM", extra: "(West Farms Deli)" }
     ];
 
+    //Must have FOUR translation languages (english, spanish, chinese, arabic)
+    //DO NOT REMOVE ANY
     const TRANSLATIONS = {
       en: {
         title: "BEAM Student Portal", subtitle: "Check your registration progress and missing forms here", 
@@ -206,6 +208,8 @@
       }).join('');
     }
 
+    //manualFallback must NEVER be touched or removed since it is important for everyone to access the website
+    //DO NOT TOUCH!!
     function manualFallback() {
       const dob = document.getElementById('dob').value;
       const email = document.getElementById('email').value;
