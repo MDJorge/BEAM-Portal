@@ -16,7 +16,7 @@
     .status-Not-Submitted, .status-Missing { color: #dc3545 !important; font-weight: bold; }
     .section-box { border-radius: 8px; padding: 15px; margin-bottom: 15px; border-inline-start: 5px solid #ccc; background: #fff; }
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
-    .section-extra { border-inline-start-color: #6f42c1; background: #f8f5ff; } /* Purple for Meningitis */
+    .section-extra { border-inline-start-color: #6f42c1; background: #f8f5ff; } 
     .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } 
     .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } 
     .section-title { font-weight: bold; color: #555; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -85,7 +85,6 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
     
-    // Stop data for Discovery students
     const SITE_DETAILS_UPTOWN = [ "SELF/FAMILY: New Design HS (350 Grand St). Arrive 8-9 AM / Pick up 4:15 PM.", "Prospect Park (B/Q): Meet 8:20 AM / Drop off 4:40 PM (Lincoln Market).", "Canarsie-Rockaway Pkwy (L): Meet 8:09 AM / Drop off 4:51 PM (Armando's Pizza).", "Church Ave (B/Q): Meet 8:21 AM / Drop off 4:39 PM (El Centenario Pizza).", "Crown Hts-Utica (3/4): Meet 8:10 AM / Drop off 4:50 PM (Elevator entrance).", "Greenpoint Ave (G): Meet 8:11 AM / Drop off 4:49 PM (Pelicana Chicken).", "Myrtle-Willoughby Aves (G): Meet 8:12 AM / Drop off 4:48 PM (Falkowitz Cakes).", "36th St (D/N/R): Meet 8:20 AM / Drop off 4:40 PM (MTA Agent Booth).", "111th (7): Meet 7:55 AM / Drop off 5:05 PM (La Gitana #2).", "Grand Ave/Newtown (M/R): Meet 8:00 AM / Drop off 5:00 PM (Dunkin' Donuts)." ];
     const SITE_DETAILS_DOWNTOWN = [ "SELF/FAMILY: Comp Sci High (447 Wales Ave). Arrive 8-9 AM / Pick up 4:15 PM.", "161st St-Yankee Stadium (4/B/D): Meet 8:14 AM / Drop off 4:46 PM (Heritage House).", "3rd Ave-149th St (2/5): Meet 8:28 AM / Drop off 4:32 PM (Bank of America).", "Burnside Ave (4): Meet 8:23 AM / Drop off 4:37 PM (Burnside Deli).", "Gun Hill Rd (2/5): Meet 8:03 AM / Drop off 4:57 PM (Dunkin' Donuts).", "Hunts Point Ave (6): Meet 8:25 AM / Drop off 4:35 PM (Popeyes).", "Kingsbridge Rd (4): Meet 8:16 AM / Drop off 4:44 PM (Jerome Pharmacy).", "Pelham Pkwy (2/5): Meet 8:12 AM / Drop off 4:48 PM (CVS Pharmacy).", "Tremont Ave (B/D): Meet 8:21 AM / Drop off 4:39 PM (Tremont Optometrist).", "West Farms Sq (2/5): Meet 8:20 AM / Drop off 4:40 PM (West Farms Deli)." ];
 
@@ -115,6 +114,32 @@
         submitted: "Enviado", notSubmitted: "No Enviado", missing: "Faltante", warning24h: "Las nuevas cargas pueden tardar 24 horas en mostrarse como enviadas.", multipleSub: "Puede enviar varias veces si es necesario.",
         am: "Método de entrega por la mañana", pm: "Método de recogida por la tarde", change: "Cambiar transporte", complete: "Confirmar transporte", guideTitle: "Ver información de paradas",
         docs: { "Parent Med": "Autorización Médica de Padres", "Phys Med": "Autorización Médica del Médico", "Meningitis": "Reconocimiento de Vacuna contra la Meningitis", "Report Card": "Boleta (7º Grado)", "Immuno": "Registro de Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
+      },
+      zh: {
+        title: "BEAM 学生门户", subtitle: "在此查看您的注册进度和缺失的表格",
+        dob: "学生出生日期", email: "电子邮件", btnCheck: "检查状态", btnSearching: "正在搜寻...",
+        errorNoStudent: "未找到匹配的学生。", statusFor: "学生状态：",
+        errorConn: "连接问题。我们无法自动验证。", manualBtn: "启动安全门户 ↗",
+        success: "🎉 注册已完成！", incomplete: "⚠️ 您的注册仍在进行中。请完成下面缺失的项目。",
+        timestamp: "状态截至", sectForms: "注册表", sectExtra: "额外确认", sectUploads: "文件上传", sectTrans: "交通方式",
+        regFormsLabel: "注册和同意书", groupedForms: "学生信息和同意书",
+        btnForms: "立即填写表格", btnExtra: "在此完成确认", btnUploads: "上传缺失文件", btnBack: "← 搜索另一名学生", 
+        submitted: "已提交", notSubmitted: "未提交", missing: "缺失", warning24h: "新上传的文件可能需要 24 小时才能显示为已提交。", multipleSub: "如果需要，您可以多次提交。",
+        am: "上午送达方式", pm: "下午接送方式", change: "更改交通方式", complete: "确认交通方式", guideTitle: "查看所有停靠点信息",
+        docs: { "Parent Med": "父母医疗许可", "Phys Med": "医生医疗许可", "Meningitis": "脑膜炎疫苗确认书", "Report Card": "七年级成绩单", "Immuno": "免疫接种记录", "Ins Front": "保险卡（正面）", "Ins Back": "保险卡（背面）" }
+      },
+      ar: {
+        title: "بوابة طلاب BEAM", subtitle: "تحقق من تقدم تسجيلك والنماذج المفقودة هنا",
+        dob: "تاريخ ميلاد الطالب", email: "البريد الإلكتروني", btnCheck: "تحقق من الحالة", btnSearching: "جاري البحث...",
+        errorNoStudent: "لم يتم العثور على طالب مطابق.", statusFor: "الحالة لـ",
+        errorConn: "مشكلة في الاتصال. لم نتمكن من التحقق تلقائياً.", manualBtn: "إطلاق البوابة الآمنة ↗",
+        success: "🎉 اكتمل التسجيل!", incomplete: "⚠️ تسجيلك لا يزال قيد التنفيذ. يرجى إكمال العناصر المفقودة أدناه.",
+        timestamp: "الحالة اعتباراً من", sectForms: "نماذج التسجيل", sectExtra: "إقرارات إضافية", sectUploads: "تحميل المستندات", sectTrans: "المواصلات",
+        regFormsLabel: "نماذج التسجيل والموافقة", groupedForms: "معلومات الطالب ونماذج الموافقة",
+        btnForms: "أكمل النماذج الآن", btnExtra: "أكمل الإقرار هنا", btnUploads: "تحميل المستندات المفقودة", btnBack: "← ابحث عن طالب آخر", 
+        submitted: "تم الإرسال", notSubmitted: "لم يتم الإرسال", missing: "مفقود", warning24h: "قد يستغرق ظهور الملفات المحملة حديثاً 24 ساعة.", multipleSub: "يمكنك الإرسال أكثر من مرة إذا لزم الأمر.",
+        am: "طريقة التوصيل الصباحية", pm: "طريقة الاستلام المسائية", change: "تغيير وسيلة المواصلات", complete: "تأكيد وسيلة المواصلات", guideTitle: "عرض جميع معلومات التوقف",
+        docs: { "Parent Med": "التصريح الطبي لولي الأمر", "Phys Med": "التصريح الطبي للطبيب", "Meningitis": "إقرار لقاح التهاب السحايا", "Report Card": "تقرير درجات الصف السابع", "Immuno": "سجل التطعيمات", "Ins Front": "بطاقة التأمين (الأمام)", "Ins Back": "بطاقة التأمين (الخلف)" }
       }
     };
 
@@ -132,10 +157,21 @@
       const t = TRANSLATIONS[currentLang];
       document.body.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
       document.getElementById('t-title').innerText = t.title;
+      document.getElementById('t-subtitle').innerText = t.subtitle;
+      document.getElementById('t-dob').innerText = t.dob;
+      document.getElementById('t-email').innerText = t.email;
       document.getElementById('btn').innerText = t.btnCheck;
       document.getElementById('t-res-title').innerText = t.title;
       document.getElementById('t-back').innerText = t.btnBack;
       if (currentResults) render(currentResults);
+    }
+
+    function manualFallback() {
+      const dob = document.getElementById('dob').value;
+      const email = document.getElementById('email').value;
+      const target = `${SCRIPT_URL}?dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
+      const chooserUrl = `https://accounts.google.com/AccountChooser?continue=${encodeURIComponent(target)}`;
+      window.open(chooserUrl, '_blank');
     }
 
     function runSearch() {
@@ -198,7 +234,12 @@
         const missingExtra = isBSA ? extraData.filter(d => d.status !== "Submitted").length : 0;
         const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
 
-        const isFullyComplete = (missingConsents === 0 && missingExtra === 0 && missingDocs === 0);
+        let transComplete = true;
+        if (s.program === "Discovery" && s.transportation) {
+           if (!s.transportation.morning || s.transportation.morning === "Missing" || !s.transportation.afternoon || s.transportation.afternoon === "Missing") transComplete = false;
+        }
+
+        const isFullyComplete = (missingConsents === 0 && missingExtra === 0 && missingDocs === 0 && transComplete);
 
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
@@ -218,7 +259,7 @@
         if (missingConsents > 0) html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100 mt-2">${t.btnForms}</a>`;
         html += `</div>`;
 
-        // 2. PURPLE MENINGITIS SECTION (Restored Logic)
+        // 2. PURPLE MENINGITIS
         if (isBSA && extraData.length > 0) {
           html += `<div class="section-box section-extra">
                     <div class="section-title">${t.sectExtra}</div>
@@ -247,12 +288,20 @@
         if (s.program === "Discovery" && s.transportation) {
             const isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
             const detailsList = isUT ? SITE_DETAILS_UPTOWN : SITE_DETAILS_DOWNTOWN;
+            const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
+            
+            const amVal = s.transportation.morning || "Missing";
+            const pmVal = s.transportation.afternoon || "Missing";
+            const amClass = (amVal === "Missing") ? "status-Missing" : "status-Submitted";
+            const pmClass = (pmVal === "Missing") ? "status-Missing" : "status-Submitted";
+
             html += `<div class="section-box section-transpo">
                       <div class="section-title">${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
                       <table class="table table-sm mb-0">
-                        <tr><td class="doc-name">${t.am}</td><td class="${!s.transportation.morning || s.transportation.morning === 'Missing' ? 'status-Missing' : ''} text-end">${s.transportation.morning || t.missing}</td></tr>
-                        <tr><td class="doc-name">${t.pm}</td><td class="${!s.transportation.afternoon || s.transportation.afternoon === 'Missing' ? 'status-Missing' : ''} text-end">${s.transportation.afternoon || t.missing}</td></tr>
+                        <tr><td class="doc-name">${t.am}</td><td class="${amClass} text-end">${amVal === "Missing" ? t.missing : amVal}</td></tr>
+                        <tr><td class="doc-name">${t.pm}</td><td class="${pmClass} text-end">${pmVal === "Missing" ? t.missing : pmVal}</td></tr>
                       </table>
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${transComplete ? t.change : t.complete}</a>
                       <details class="transpo-guide"><summary>${t.guideTitle}</summary><ul>${detailsList.map(i => `<li>${i}</li>`).join('')}</ul></details>
                     </div>`;
         }
@@ -264,7 +313,6 @@
     }
 
     function resetSearch() { document.getElementById('results').classList.add('hidden'); document.getElementById('searchBox').classList.remove('hidden'); currentResults = null; }
-    function manualFallback() { /* logic remains the same */ }
   </script>
 </body>
 </html>
