@@ -6,41 +6,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { background-color: #f4f7f9; padding: 20px; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #f4f7f9; padding: 20px; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; transition: all 0.3s ease; }
     .hidden { display: none; }
     .card { border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; margin: auto; background: white; }
     .card-header { background: #004a99; color: white; padding: 20px; border-radius: 12px 12px 0 0; position: relative; }
     .lang-toggle { position: absolute; top: 15px; right: 15px; }
+    .form-select-sm { background-color: rgba(255,255,255,0.9); border: none; font-weight: bold; color: #004a99; cursor: pointer; }
+    
+    /* Status Styling */
     .status-Submitted { color: #198754 !important; font-weight: bold; }
     .status-Not-Submitted, .status-Missing { color: #dc3545 !important; font-weight: bold; }
+    
+    /* Standard Section Logic */
     .section-box { border-radius: 8px; padding: 15px; margin-bottom: 15px; border-inline-start: 5px solid #ccc; background: #fff; }
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
-    .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; }
+    .section-extra { border-inline-start-color: #6f42c1; background: #f8f5ff; } 
+    .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } 
+    .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } 
+
+    .section-title { font-weight: bold; color: #555; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-action { margin-top: 5px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
     
-    /* THE BUTTON FIX: Lightens and prevents clicks when searching */
-    button:disabled { 
-      opacity: 0.5; 
-      cursor: not-allowed;
-    }
+    .table td { padding: 10px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
+    .doc-name { color: #444; font-size: 0.95rem; }
+    .doc-link { text-decoration: none; color: #004a99; font-weight: 500; border-bottom: 1px dotted #004a99; }
+    .doc-link:hover { color: #002a5c; border-bottom: 1px solid #002a5c; }
     
+    .success-banner { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+    .warning-banner { color: #dc3545; background: #fff5f5; border: 1px dashed #dc3545; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
+    
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
     body[dir="rtl"] { text-align: right; }
+    body[dir="rtl"] .text-end { text-align: left !important; }
+    body[dir="rtl"] .lang-toggle { left: 15px; right: auto; }
   </style>
 </head>
 <body>
 
-  <div id="searchBox" class="card">
+  <div id="searchBox" class="card p-0">
     <div class="card-header">
       <div class="lang-toggle">
-        <select id="langSelect" class="form-select form-select-sm" onchange="changeLanguage()">
+        <select id="langSelect" class="form-select form-select-sm" onchange="syncLang(this)">
           <option value="en">🇺🇸 English</option>
           <option value="es">🇪🇸 Español</option>
           <option value="zh">🇨🇳 中文</option>
           <option value="ar">🇸🇦 العربية</option>
         </select>
       </div>
-      <h3 id="t-title">BEAM Student Portal</h3>
-      <p id="t-subtitle">Check your registration progress here</p>
+      <h3 class="mb-1 mt-2" id="t-title">BEAM Student Portal</h3>
+      <p class="mb-0 small" id="t-subtitle">Check your registration progress and missing forms here</p>
     </div>
     <div class="card-body p-4">
       <div class="mb-3">
@@ -51,75 +66,110 @@
         <label class="form-label fw-bold" id="t-email">Email</label>
         <input type="email" id="email" class="form-control" placeholder="guardian@email.com">
       </div>
-      <button onclick="runSearch()" id="btn" class="btn btn-primary w-100 fw-bold">Check Status</button>
-      <div id="error" class="alert alert-warning mt-3 hidden"></div>
+      <button onclick="runSearch()" id="btn" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">Check Status</button>
+      <div id="error" class="alert alert-warning mt-3 text-center hidden" style="font-size: 0.9rem;"></div>
     </div>
   </div>
 
   <div id="results" class="hidden">
-    <div class="card">
+    <div class="card p-0">
+      <div class="card-header">
+         <div class="lang-toggle">
+          <select id="langSelectResult" class="form-select form-select-sm" onchange="syncLang(this)">
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ar">🇸🇦 العربية</option>
+          </select>
+        </div>
+        <h3 class="mb-1 mt-2" id="t-res-title">Student Portal</h3>
+      </div>
       <div class="card-body p-4">
         <div id="content"></div>
-        <button onclick="resetSearch()" id="t-back" class="btn btn-link w-100">← Back</button>
+        <button onclick="resetSearch()" id="t-back" class="btn btn-link w-100 mt-3 text-decoration-none">← Search Another Student</button>
       </div>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
 
     const TRANSLATIONS = {
       en: {
-        title: "BEAM Student Portal", subtitle: "Check your registration progress here",
+        title: "BEAM Student Portal", subtitle: "Check your registration progress and missing forms here",
         dob: "Student Birthdate", email: "Email", btnCheck: "Check Status", btnSearching: "Searching...",
-        errorNoStudent: "No matching student found.", statusFor: "Status for",
-        sectForms: "Forms", sectTrans: "Transportation", submitted: "Submitted", notSubmitted: "Not Submitted",
-        missing: "Missing", am: "Morning Bus Stop", pm: "Afternoon Bus Stop", change: "Change Stops", complete: "Confirm Stops",
-        btnBack: "← Search Another Student",
+        errorNoStudent: "No matching student found. Please check your details.", statusFor: "Status for",
+        success: "🎉 Registration is complete!", timestamp: "Status as of",
+        sectForms: "Registration Forms", sectExtra: "Additional Acknowledgements", sectUploads: "Document Uploads", sectTrans: "Transportation",
+        groupedForms: "Student Information and Consent Forms", btnForms: "Complete Forms Now", btnExtra: "Complete Acknowledgement Here",
+        btnUploads: "Upload Missing Documents", btnBack: "← Search Another Student", submitted: "Submitted", notSubmitted: "Not Submitted", missing: "Missing",
+        warning24h: "New uploads may take 24 hours to show as submitted.", multipleSub: "You can submit multiple times if needed.",
+        am: "Morning Bus Stop", pm: "Afternoon Bus Stop", change: "Change Bus Stops", complete: "Confirm Bus Stop Choice", warningTranspo: "Changes take 24 hours to update.",
         docs: { "Parent Med": "Parent Medical Release", "Phys Med": "Physician's Medical Release", "Meningitis": "Meningitis Vaccine Acknowledgement", "Report Card": "7th Grade Report Card", "Immuno": "Immunization Record", "Ins Front": "Insurance Card (Front)", "Ins Back": "Insurance Card (Back)" }
       },
       es: {
-        title: "Portal Estudiantil BEAM", subtitle: "Verifique su progreso de registro",
+        title: "Portal Estudiantil BEAM", subtitle: "Verifique su progreso de registro y formularios faltantes",
         dob: "Fecha de Nacimiento", email: "Correo Electrónico", btnCheck: "Verificar Estado", btnSearching: "Buscando...",
         errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
-        sectForms: "Formularios", sectTrans: "Transporte", submitted: "Enviado", notSubmitted: "No Enviado",
-        missing: "Faltante", am: "Parada de la mañana", pm: "Parada de la tarde", change: "Cambiar paradas", complete: "Confirmar elección",
-        btnBack: "← Buscar Otro Estudiante",
-        docs: { "Parent Med": "Médico Padres", "Phys Med": "Médico Doctor", "Meningitis": "Meningitis", "Report Card": "Boleta", "Immuno": "Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
+        success: "🎉 ¡El registro está completo!", timestamp: "Estado al",
+        sectForms: "Formularios de Registro", sectExtra: "Reconocimientos Adicionales", sectUploads: "Carga de Documentos", sectTrans: "Transporte",
+        groupedForms: "Información y Consentimientos", btnForms: "Completar Formularios Ahora", btnExtra: "Completar Reconocimiento Aquí",
+        btnUploads: "Subir Documentos Faltantes", btnBack: "← Buscar Otro Estudiante", submitted: "Enviado", notSubmitted: "No Enviado", missing: "Faltante",
+        warning24h: "Nuevas cargas pueden tardar 24 horas.", multipleSub: "Puede enviar varias veces si es necesario.",
+        am: "Parada de la mañana", pm: "Parada de la tarde", change: "Cambiar paradas", complete: "Confirmar elección", warningTranspo: "Los cambios tardan 24 horas.",
+        docs: { "Parent Med": "Autorización Médica de Padres", "Phys Med": "Autorización Médica del Médico", "Meningitis": "Reconocimiento de Vacuna contra la Meningitis", "Report Card": "Boleta (7º Grado)", "Immuno": "Registro de Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
       },
       zh: {
-        title: "BEAM 学生门户", subtitle: "在此查看您的注册进度",
+        title: "BEAM 学生门户", subtitle: "在此查看您的注册进度和缺失的表格",
         dob: "学生出生日期", email: "电子邮件", btnCheck: "查看状态", btnSearching: "搜索中...",
-        errorNoStudent: "未找到匹配的学生。", statusFor: "状态：",
-        sectForms: "表格", sectTrans: "交通", submitted: "已提交", notSubmitted: "未提交",
-        missing: "缺失", am: "上午巴士站", pm: "下午巴士站", change: "更改巴士站", complete: "确认选择",
-        btnBack: "← 搜索另一名学生",
-        docs: { "Parent Med": "家长医疗授权书", "Phys Med": "医生医疗授权书", "Meningitis": "脑膜炎确认书", "Report Card": "成绩单", "Immuno": "免疫记录", "Ins Front": "保险卡 (正面)", "Ins Back": "保险卡 (背面)" }
+        errorNoStudent: "未找到匹配的学生。请检查您的详细信息。", statusFor: "状态：",
+        success: "🎉 注册完成！", timestamp: "状态日期：",
+        sectForms: "注册表格", sectExtra: "额外确认", sectUploads: "文件上传", sectTrans: "交通",
+        groupedForms: "学生信息和同意书", btnForms: "立即填写表格", btnExtra: "在此完成确认",
+        btnUploads: "上传缺失文件", btnBack: "← 搜索另一名学生", submitted: "已提交", notSubmitted: "未提交", missing: "缺失",
+        warning24h: "新上传的内容可能需要24小时才能显示为已提交。", multipleSub: "如果需要，您可以多次提交。",
+        am: "上午巴士站", pm: "下午巴士站", change: "更改巴士站", complete: "确认巴士站选择", warningTranspo: "更改需要24小时生效。",
+        docs: { "Parent Med": "家长医疗授权书", "Phys Med": "医生医疗授权书", "Meningitis": "脑膜炎疫苗确认书", "Report Card": "七年级成绩单", "Immuno": "免疫记录", "Ins Front": "保险卡 (正面)", "Ins Back": "保险卡 (背面)" }
       },
       ar: {
-        title: "بوابة طلاب BEAM", subtitle: "تحقق من تقدم التسجيل هنا",
+        title: "بوابة طلاب BEAM", subtitle: "تحقق من تقدم التسجيل والنماذج المفقودة هنا",
         dob: "تاريخ ميلاد الطالب", email: "البريد الإلكتروني", btnCheck: "التحقق من الحالة", btnSearching: "جاري البحث...",
-        errorNoStudent: "لم يتم العثور على طالب.", statusFor: "الحالة لـ",
-        sectForms: "نماذج", sectTrans: "المواصلات", submitted: "تم الإرسال", notSubmitted: "لم يتم الإرسال",
-        missing: "مفقود", am: "موقف حافلة الصباح", pm: "موقف حافلة المساء", change: "تغيير المواقف", complete: "تأكيد المواقف",
-        btnBack: "← البحث عن طالب آخر",
-        docs: { "Parent Med": "طبي الوالدين", "Phys Med": "طبي الطبيب", "Meningitis": "التهاب السحايا", "Report Card": "الشهادة", "Immuno": "التطعيما", "Ins Front": "التأمين (الأمام)", "Ins Back": "التأمين (الخلف)" }
+        errorNoStudent: "لم يتم العثور على طالب مطابق. يرجى التحقق من التفاصيل الخاصة بك.", statusFor: "الحالة لـ",
+        success: "🎉 اكتمل التسجيل!", timestamp: "الحالة اعتبارًا من",
+        sectForms: "نماذج التسجيل", sectExtra: "إقرارات إضافية", sectUploads: "تحميل المستندات", sectTrans: "المواصلات",
+        groupedForms: "نماذج معلومات الطالب والموافقة", btnForms: "أكمل النماذج الآن", btnExtra: "أكمل الإقرار هنا",
+        btnUploads: "تحميل المستندات المفقودة", btnBack: "← البحث عن طالب آخر", submitted: "تم الإرسال", notSubmitted: "لم يتم الإرسال", missing: "مفقود",
+        warning24h: "قد تستغرق التحميلات الجديدة 24 ساعة لتظهر كـ 'تم الإرسال'.", multipleSub: "يمكنك الإرسال عدة مرات إذا لزم الأمر.",
+        am: "موقف حافلة الصباح", pm: "موقف حافلة المساء", change: "تغيير مواقف الحافلات", complete: "تأكيد اختيار موقف الحافلة", warningTranspo: "تستغرق التغييرات 24 ساعة للتحديث.",
+        docs: { "Parent Med": "الإفراج الطبي لأولياء الأمور", "Phys Med": "الإفراج الطبي للطبيب", "Meningitis": "إقرار لقاح التهاب السحايا", "Report Card": "شهادة الصف السابع", "Immuno": "سجل التطعيم", "Ins Front": "بطاقة التأمين (الأمام)", "Ins Back": "بطاقة التأمين (الخلف)" }
       }
     };
 
     let currentLang = 'en';
     let currentResults = null;
 
+    function syncLang(el) {
+      document.getElementById('langSelect').value = el.value;
+      document.getElementById('langSelectResult').value = el.value;
+      changeLanguage();
+    }
+
     function changeLanguage() {
       currentLang = document.getElementById('langSelect').value;
       const t = TRANSLATIONS[currentLang];
+      
+      // Update Lock/Search Page
       document.body.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
       document.getElementById('t-title').innerText = t.title;
       document.getElementById('t-subtitle').innerText = t.subtitle;
       document.getElementById('t-dob').innerText = t.dob;
       document.getElementById('t-email').innerText = t.email;
       document.getElementById('btn').innerText = t.btnCheck;
+      
+      // Update Result Page static text
+      document.getElementById('t-res-title').innerText = t.title;
       document.getElementById('t-back').innerText = t.btnBack;
+
       if (currentResults) render(currentResults);
     }
 
@@ -127,13 +177,10 @@
       const dob = document.getElementById('dob').value;
       const email = document.getElementById('email').value;
       const btn = document.getElementById('btn');
-      
+      const t = TRANSLATIONS[currentLang];
       if(!dob || !email) return;
-
-      // DISABLE BUTTON
       btn.disabled = true;
-      btn.innerText = TRANSLATIONS[currentLang].btnSearching;
-
+      btn.innerText = t.btnSearching;
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
@@ -141,55 +188,102 @@
     }
 
     window.receiveData = function(results) {
-      if(document.getElementById('jsonp_loader')) document.getElementById('jsonp_loader').remove();
+      const scriptTag = document.getElementById('jsonp_loader');
+      if(scriptTag) scriptTag.remove(); 
       currentResults = results;
       render(results);
     };
 
     function render(results) {
       const t = TRANSLATIONS[currentLang];
-      const btn = document.getElementById('btn');
-      
-      // RE-ENABLE BUTTON
-      btn.disabled = false;
-      btn.innerText = t.btnCheck;
+      document.getElementById('btn').disabled = false;
+      document.getElementById('btn').innerText = t.btnCheck;
 
       if (!results || results.length === 0) {
-        document.getElementById('error').innerText = t.errorNoStudent;
+        document.getElementById('error').innerHTML = t.errorNoStudent;
         document.getElementById('error').classList.remove('hidden');
         return;
       }
       document.getElementById('error').classList.add('hidden');
-      
-      let html = '';
-      results.forEach(s => {
-        html += `<h4 class="text-center">${t.statusFor} ${s.firstName}</h4>`;
-        
-        const mForms = s.details.filter(d => ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"].includes(d.name) && d.status !== "Submitted").length;
-        
-        html += `<div class="section-box section-forms">
-                  <div class="fw-bold mb-1">${t.sectForms}</div>
-                  <div class="d-flex justify-content-between">
-                    <span>Registration Forms</span>
-                    <span class="${mForms === 0 ? 'status-Submitted' : 'status-Not-Submitted'}">${mForms === 0 ? t.submitted : t.notSubmitted}</span>
-                  </div>
-                </div>`;
 
+      const today = new Date();
+      const dateStr = (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear() + ' 6:00 AM EST';
+      let html = '';
+
+      results.forEach(s => {
+        const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
+        const extraItems = ["Meningitis"]; 
+        const consentData = s.details.filter(d => surveyItems.includes(d.name));
+        const extraData = s.details.filter(d => extraItems.includes(d.name));
+        const documentData = s.details.filter(d => !surveyItems.includes(d.name) && !extraItems.includes(d.name));
+
+        const missingConsents = consentData.filter(d => d.status !== "Submitted").length;
+        const missingExtra = extraData.filter(d => d.status !== "Submitted").length;
+        const missingDocs = documentData.filter(d => d.status !== "Submitted").length;
+        const isFullyComplete = (missingConsents === 0 && missingExtra === 0 && missingDocs === 0);
+
+        html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
+        html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
+
+        if (isFullyComplete) html += `<div class="success-banner">${t.success}</div>`;
+        html += `<p class="timestamp text-center">${t.timestamp}: ${dateStr}</p>`;
+
+        html += `<div class="warning-banner">
+                   ⚠️ <strong>${t.warning24h}</strong><br>
+                   <span style="color: #666; font-size: 0.85rem;">${t.multipleSub}</span>
+                 </div>`;
+
+        // 1. REGISTRATION FORMS
+        html += `<div class="section-box section-forms">
+                  <div class="section-title">${t.sectForms}</div>
+                  <table class="table table-sm mb-0">
+                    <tr><td class="doc-name">${t.groupedForms}</td><td class="${missingConsents === 0 ? "status-Submitted" : "status-Not-Submitted"} text-end">${missingConsents === 0 ? t.submitted : t.notSubmitted}</td></tr>
+                  </table>`;
+        if (missingConsents > 0) html += `<a href="https://www.surveymonkey.com/r/R3PW5S8" target="_blank" class="btn btn-primary btn-action w-100 mt-2">${t.btnForms}</a>`;
+        html += `</div>`;
+
+        // 2. ADDITIONAL ACKNOWLEDGEMENTS
+        if (extraData.length > 0) {
+          html += `<div class="section-box section-extra"><div class="section-title">${t.sectExtra}</div><table class="table table-sm mb-0">`;
+          extraData.forEach(d => {
+              html += `<tr><td class="doc-name">${t.docs[d.name] || d.name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
+          });
+          html += `</table>`;
+          if (missingExtra > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-dark" style="background-color: #e0cffc; border: none;">${t.btnExtra}</a>`;
+          html += `</div>`;
+        }
+
+        // 3. DOCUMENT UPLOADS
+        html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
+        documentData.forEach(d => {
+            let name = t.docs[d.name] || d.name;
+            if (d.name === "Parent Med") name = `<a href="https://drive.google.com/file/d/1_wGr6RFSioXv70VeNOmugD0iUdQdIzJ6/view" target="_blank" class="doc-link">${name}</a>`;
+            if (d.name === "Phys Med") name = `<a href="https://drive.google.com/file/d/1NjZ0nRDhwQ4Sf_rYmunnjUnNG5rRHPRD/view" target="_blank" class="doc-link">${name}</a>`;
+            html += `<tr><td class="doc-name">${name}</td><td class="${d.status === 'Submitted' ? 'status-Submitted' : 'status-Not-Submitted'} text-end">${d.status === 'Submitted' ? t.submitted : t.notSubmitted}</td></tr>`;
+        });
+        html += `</table>`;
+        if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white" style="background-color: #fd7e14; border: none;">${t.btnUploads}</a>`;
+        html += `</div>`;
+
+        // 4. TRANSPORTATION
         if (s.program === "Discovery" && s.transportation) {
-            const isUT = (s.transportation.location || "").toUpperCase().includes("UT");
-            const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
-            const mStop = s.transportation.morning || t.missing;
-            const aStop = s.transportation.afternoon || t.missing;
-            
+            const isUptown = (s.transportation.location || "").toLowerCase().includes("uptown");
+            const surveyUrl = isUptown ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
+            const mStop = s.transportation.morning || "Missing";
+            const aStop = s.transportation.afternoon || "Missing";
+            const hasSub = (mStop !== "Missing" && mStop !== "") && (aStop !== "Missing" && aStop !== "");
+
             html += `<div class="section-box section-transpo">
-                      <div class="fw-bold mb-1">${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
+                      <div class="section-title">${t.sectTrans}</div>
                       <table class="table table-sm mb-0">
-                        <tr><td>${t.am}</td><td class="text-end">${mStop}</td></tr>
-                        <tr><td>${t.pm}</td><td class="text-end">${aStop}</td></tr>
+                        <tr><td class="doc-name">${t.am}</td><td class="${mStop === 'Missing' ? 'status-Missing' : ''} text-end">${mStop === 'Missing' ? t.missing : mStop}</td></tr>
+                        <tr><td class="doc-name">${t.pm}</td><td class="${aStop === 'Missing' ? 'status-Missing' : ''} text-end">${aStop === 'Missing' ? t.missing : aStop}</td></tr>
                       </table>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 text-white mt-2">${(mStop !== t.missing) ? t.change : t.complete}</a>
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${hasSub ? t.change : t.complete}</a>
+                      <div class="mt-2 text-muted text-center" style="font-size: 0.7rem; font-style: italic;">⚠️ ${t.warningTranspo}</div>
                     </div>`;
         }
+        html += `<hr class="my-4">`;
       });
       document.getElementById('content').innerHTML = html;
       document.getElementById('searchBox').classList.add('hidden');
@@ -197,8 +291,12 @@
     }
 
     function resetSearch() {
+      document.getElementById('dob').value = '';
+      document.getElementById('email').value = '';
       document.getElementById('results').classList.add('hidden');
       document.getElementById('searchBox').classList.remove('hidden');
+      document.getElementById('content').innerHTML = '';
+      currentResults = null;
     }
   </script>
 </body>
