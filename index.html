@@ -91,30 +91,33 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJyNKS0McK5fVMCP51_v37SZImaShhpE7T4F6MluK0zA9JM2X-m7S3tnsl02XpRUPg/exec";
     
+    // Updated Uptown Stops (Discovery at Comp Sci High)
     const STOPS_UPTOWN = [
-        { name: "Comp Sci High (447 Wales Ave)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
-        { name: "161st St-Yankee Stadium (4/B/D)", am: "8:14 AM", pm: "4:46 PM", extra: "(Heritage House)" },
-        { name: "3rd Ave-149th St (2/5)", am: "8:28 AM", pm: "4:32 PM", extra: "(Bank of America)" },
-        { name: "Burnside Ave (4)", am: "8:23 AM", pm: "4:37 PM", extra: "(Burnside Deli)" },
-        { name: "Gun Hill Rd (2/5)", am: "8:03 AM", pm: "4:57 PM", extra: "(Dunkin' Donuts)" },
-        { name: "Hunts Point Ave (6)", am: "8:25 AM", pm: "4:35 PM", extra: "(Popeyes)" },
-        { name: "Kingsbridge Rd (4)", am: "8:16 AM", pm: "4:44 PM", extra: "(Jerome Pharmacy)" },
-        { name: "Pelham Pkwy (2/5)", am: "8:12 AM", pm: "4:48 PM", extra: "(CVS Pharmacy)" },
-        { name: "Tremont Ave (B/D)", am: "8:21 AM", pm: "4:39 PM", extra: "(Tremont Optometrist)" },
-        { name: "West Farms Sq (2/5)", am: "8:20 AM", pm: "4:40 PM", extra: "(West Farms Deli)" }
+        { name: "Comp Sci High (447 Wales Ave)", am: "8:00 AM - 9:00 AM", pm: "4:15 PM", type: "SELF" },
+        { name: "Dyckman St", am: "7:51 AM", pm: "5:09 PM", extra: "in front of La Nacional (151-169 Nagle Ave, New York, NY 10040)" },
+        { name: "168th St", am: "8:00 AM", pm: "5:00 PM", extra: "in front of the Columbia University Russ Berrie Medical Science Pavilion" },
+        { name: "116th St", am: "8:30 AM", pm: "4:30 PM", extra: "in front of Super Nice Coffee and Bakery (156 E 117th St, New York, NY 10035)" },
+        { name: "170 St", am: "8:15 AM", pm: "4:45 PM", extra: "in front of the Speedy 1hr Photo Center (2 E 170th St, Bronx, NY 10452)" },
+        { name: "Kingsbridge Rd", am: "8:05 AM", pm: "4:55 PM", extra: "in front of the Dunkin' on 2 E Kingsbridge Rd, Bronx, NY 10468" },
+        { name: "E 161 St/Melrose Av", am: "8:15 AM", pm: "4:45 PM", extra: "in front of the Krazy Dollar store (406 E 161st St #2, Bronx, NY 10451)" },
+        { name: "St. Lawrence Ave", am: "8:25 AM", pm: "4:35 PM", extra: "in front of Guatelinda (1770 Westchester Ave, Bronx, NY 10472)" },
+        { name: "Gun Hill Rd", am: "8:05 AM", pm: "4:55 PM", extra: "in front of the Chase Bank (3514 White Plains Rd, Bronx, NY 10467)" },
+        { name: "Pelham Bay Park", am: "8:15 AM", pm: "4:45 PM", extra: "in front of the Dunkin' on 3281 Westchester Ave, Bronx, NY 10461" },
+        { name: "137th-City College", am: "8:32 AM", pm: "4:28 PM", extra: "in front of La Esquina Del Sazón at 3379 Broadway, New York, NY 10031" }
     ];
 
+    // Updated Downtown Stops (Discovery at New Design HS)
     const STOPS_DOWNTOWN = [
-        { name: "New Design HS (350 Grand St)", am: "8-9 AM", pm: "4:15 PM", type: "SELF" },
-        { name: "Prospect Park (B/Q)", am: "8:20 AM", pm: "4:40 PM", extra: "(Lincoln Market)" },
-        { name: "Canarsie-Rockaway Pkwy (L)", am: "8:09 AM", pm: "4:51 PM", extra: "(Armando's Pizza)" },
-        { name: "Church Ave (B/Q)", am: "8:21 AM", pm: "4:39 PM", extra: "(El Centenario Pizza)" },
-        { name: "Crown Hts-Utica (3/4)", am: "8:10 AM", pm: "4:50 PM", extra: "(Elevator entrance)" },
-        { name: "Greenpoint Ave (G)", am: "8:11 AM", pm: "4:49 PM", extra: "(Pelicana Chicken)" },
-        { name: "Myrtle-Willoughby Aves (G)", am: "8:12 AM", pm: "4:48 PM", extra: "(Falkowitz Cakes)" },
-        { name: "36th St (D/N/R)", am: "8:20 AM", pm: "4:40 PM", extra: "(MTA Agent Booth)" },
-        { name: "111th (7)", am: "7:55 AM", pm: "5:05 PM", extra: "(La Gitana #2)" },
-        { name: "Grand Ave/Newtown (M/R)", am: "8:00 AM", pm: "5:00 PM", extra: "(Dunkin' Donuts)" }
+        { name: "New Design HS (350 Grand St)", am: "8:00 AM - 9:00 AM", pm: "4:15 PM", type: "SELF" },
+        { name: "Prospect Park (B/Q)", am: "8:20 AM", pm: "4:40 PM", extra: "in front of Lincoln Market (33 Lincoln Rd, Brooklyn, NY 11225)" },
+        { name: "Canarsie-Rockaway Pkwy (L)", am: "8:09 AM", pm: "4:51 PM", extra: "in front of the Armando's Pizza (1413 Rockaway Pkwy)" },
+        { name: "Church Ave (B/Q)", am: "8:21 AM", pm: "4:39 PM", extra: "in front of the El Centenario Pizza (57 E 18th St, Brooklyn, NY 11226)" },
+        { name: "Crown Hts-Utica (3/4)", am: "8:10 AM", pm: "4:50 PM", extra: "by the elevator entrance (street level) outside of the station" },
+        { name: "Greenpoint Ave (G)", am: "8:11 AM", pm: "4:49 PM", extra: "in front of the Pelicana Chicken (941 Manhattan Ave, Brooklyn, NY 11222)" },
+        { name: "Myrtle-Willoughby Aves (G)", am: "8:12 AM", pm: "4:48 PM", extra: "in front of the Falkowitz Cakes And Desserts (597 Marcy Ave, Brooklyn, NY 11206)" },
+        { name: "36th St (D/N/R)", am: "8:20 AM", pm: "4:40 PM", extra: "at MTA agent booth inside the station at 36th St.(D/N/R)" },
+        { name: "111th (7)", am: "7:55 AM", pm: "5:05 PM", extra: "in front of La Gitana #2 (11103 Roosevelt Ave, Flushing, NY 11368)" },
+        { name: "Grand Ave/Newtown (M/R)", am: "8:00 AM", pm: "5:00 PM", extra: "in front of the Dunkin' Donuts (86-10 Queens Blvd, Queens, NY 11373)" }
     ];
 
     //Must have FOUR translation languages (english, spanish, chinese, arabic)
