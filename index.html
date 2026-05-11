@@ -12,23 +12,35 @@
     .card-header { background: #004a99; color: white; padding: 20px; border-radius: 12px 12px 0 0; position: relative; }
     .lang-toggle { position: absolute; top: 15px; right: 15px; }
     .form-select-sm { background-color: rgba(255,255,255,0.9); border: none; font-weight: bold; color: #004a99; cursor: pointer; }
+    
+    /* Status Colors */
     .status-Submitted { color: #198754 !important; font-weight: bold; }
     .status-Not-Submitted, .status-Missing { color: #dc3545 !important; font-weight: bold; }
+    
+    /* Section Styling */
     .section-box { border-radius: 8px; padding: 15px; margin-bottom: 15px; border-inline-start: 5px solid #ccc; background: #fff; }
     .section-forms { border-inline-start-color: #0d6efd; background: #f0f7ff; } 
     .section-uploads { border-inline-start-color: #fd7e14; background: #fff8f0; } 
     .section-transpo { border-inline-start-color: #0dcaf0; background: #f0fcfe; } 
+    
     .section-title { font-weight: bold; color: #555; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-action { margin-top: 5px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; padding: 8px 12px; }
     .table td { padding: 10px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
     .doc-name { color: #444; font-size: 0.95rem; }
+    
+    /* Banners */
     .success-banner { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+    .warning-banner-box { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+    
+    /* Transportation Guide */
     .transpo-guide { font-size: 0.8rem; background: #fff; border: 1px solid #dee2e6; border-radius: 6px; padding: 10px; margin-top: 10px; }
     .transpo-guide summary { cursor: pointer; font-weight: bold; color: #004a99; outline: none; }
     .transpo-guide ul { padding-left: 1.2rem; margin-top: 8px; margin-bottom: 0; }
     .transpo-guide li { margin-bottom: 5px; }
+    
     body[dir="rtl"] { text-align: right; }
     body[dir="rtl"] .lang-toggle { left: 15px; right: auto; }
+    body[dir="rtl"] .text-end { text-align: left !important; }
   </style>
 </head>
 <body>
@@ -113,7 +125,9 @@
         title: "BEAM Student Portal", dob: "Student Birthdate", email: "Email", btnCheck: "Check Status", btnSearching: "Searching...",
         errorNoStudent: "No matching student found.", statusFor: "Status for",
         errorConn: "Connection Issue. We couldn't verify automatically.", manualBtn: "Launch Secure Portal ↗",
-        success: "🎉 Registration is complete!", timestamp: "Status as of",
+        success: "🎉 Registration is complete!", 
+        incomplete: "⚠️ Your registration is still in progress. Please complete the missing items below.",
+        timestamp: "Status as of",
         sectForms: "Registration Forms", sectUploads: "Document Uploads", sectTrans: "Transportation",
         btnForms: "Complete Forms Now", btnUploads: "Upload Missing Documents", btnBack: "← Search Another Student", 
         submitted: "Submitted", notSubmitted: "Not Submitted", missing: "Missing",
@@ -126,7 +140,9 @@
         title: "Portal Estudiantil BEAM", dob: "Fecha de Nacimiento", email: "Correo Electrónico", btnCheck: "Verificar Estado", btnSearching: "Buscando...",
         errorNoStudent: "No se encontró ningún estudiante.", statusFor: "Estado de",
         errorConn: "Problema de conexión.", manualBtn: "Abrir Portal Seguro ↗",
-        success: "🎉 ¡El registro está completo!", timestamp: "Estado al",
+        success: "🎉 ¡El registro está completo!", 
+        incomplete: "⚠️ Su registro aún está en progreso. Por favor complete los elementos faltantes a continuación.",
+        timestamp: "Estado al",
         sectForms: "Formularios de Registro", sectUploads: "Carga de Documentos", sectTrans: "Transporte",
         btnForms: "Completar Formularios Ahora", btnUploads: "Subir Documentos Faltantes", btnBack: "← Buscar Otro Estudiante", 
         submitted: "Enviado", notSubmitted: "No Enviado", missing: "Faltante",
@@ -134,6 +150,36 @@
         change: "Cambiar método de transporte", complete: "Confirmar método de transporte",
         guideTitle: "Ver información de todas las paradas",
         docs: { "Parent Med": "Autorización Médica de Padres", "Phys Med": "Autorización Médica del Médico", "Meningitis": "Reconocimiento de Vacuna contra la Meningitis", "Report Card": "Boleta (7º Grado)", "Immuno": "Registro de Inmunización", "Ins Front": "Seguro (Frente)", "Ins Back": "Seguro (Dorso)" }
+      },
+      zh: {
+        title: "BEAM 学生门户", dob: "学生出生日期", email: "电子邮件", btnCheck: "检查状态", btnSearching: "搜索中...",
+        errorNoStudent: "未找到匹配的学生。", statusFor: "状态：",
+        errorConn: "连接问题。我们无法自动验证。", manualBtn: "启动安全门户 ↗",
+        success: "🎉 注册已完成！", 
+        incomplete: "⚠️ 您的注册仍在中。请完成下面缺少的项目。",
+        timestamp: "状态日期：",
+        sectForms: "注册表", sectUploads: "文件上传", sectTrans: "交通",
+        btnForms: "立即填写表格", btnUploads: "上传缺失文件", btnBack: "← 搜索另一名学生", 
+        submitted: "已提交", notSubmitted: "未提交", missing: "缺失",
+        am: "早晨送达方式", pm: "下午接送方式", 
+        change: "更改交通方式", complete: "确认交通方式",
+        guideTitle: "查看所有站点信息",
+        docs: { "Parent Med": "父母医疗许可", "Phys Med": "医生医疗许可", "Meningitis": "脑膜炎疫苗确认", "Report Card": "七年级成绩单", "Immuno": "免疫接种记录", "Ins Front": "保险卡（正面）", "Ins Back": "保险卡（背面）" }
+      },
+      ar: {
+        title: "بوابة طلاب BEAM", dob: "تاريخ ميلاد الطالب", email: "البريد الإلكتروني", btnCheck: "تحقق من الحالة", btnSearching: "جاري البحث...",
+        errorNoStudent: "لم يتم العثور على طالب مطابق.", statusFor: "الحالة لـ",
+        errorConn: "مشكلة في الاتصال. لم نتمكن من التحقق تلقائياً.", manualBtn: "إطلاق البوابة الآمنة ↗",
+        success: "🎉 اكتمل التسجيل!", 
+        incomplete: "⚠️ تسجيلك لا يزال قيد التنفيذ. يرجى إكمال العناصر المفقودة أدناه.",
+        timestamp: "الحالة اعتباراً من",
+        sectForms: "نماذج التسجيل", sectUploads: "تحميل المستندات", sectTrans: "المواصلات",
+        btnForms: "أكمل النماذج الآن", btnUploads: "تحميل المستندات المفقودة", btnBack: "← ابحث عن طالب آخر", 
+        submitted: "تم الإرسال", notSubmitted: "لم يتم الإرسال", missing: "مفقود",
+        am: "طريقة التوصيل الصباحية", pm: "طريقة الاستلام المسائية", 
+        change: "تغيير وسيلة المواصلات", complete: "تأكيد وسيلة المواصلات",
+        guideTitle: "عرض جميع معلومات التوقف",
+        docs: { "Parent Med": "التصريح الطبي لولي الأمر", "Phys Med": "التصريح الطبي للطبيب", "Meningitis": "إقرار لقاح التهاب السحايا", "Report Card": "تقرير درجات الصف السابع", "Immuno": "سجل التطعيمات", "Ins Front": "بطاقة التأمين (الأمام)", "Ins Back": "بطاقة التأمين (الخلف)" }
       }
     };
 
@@ -212,7 +258,6 @@
       let html = '';
       
       results.forEach(s => {
-        // Logic for "Registration Complete" banner
         const surveyItems = ["Liability Waiver", "Media Release", "Code of Conduct", "Data Consent", "Attendance"];
         const documentData = s.details.filter(d => !surveyItems.includes(d.name) && d.name !== "Meningitis");
         
@@ -226,26 +271,22 @@
           }
         }
 
-        // A student is complete if no missing consents, no missing docs, and transpo is done (if applicable)
         const isFullyComplete = (missingConsents === 0 && missingDocs === 0 && transpoComplete);
 
         html += `<h4 class="text-primary fw-bold text-center mb-1">${t.statusFor} ${s.firstName}</h4>`;
         html += `<div class="text-center mb-3"><span class="badge bg-secondary rounded-pill">${s.program}</span></div>`;
         
-        // RESTORED: Registration Complete Banner
+        // Banner Logic
         if (isFullyComplete) {
           html += `<div class="success-banner">${t.success}</div>`;
+        } else {
+          html += `<div class="warning-banner-box">${t.incomplete}</div>`;
         }
         
         html += `<p class="timestamp text-center small text-muted">${t.timestamp}: ${dateStr}</p>`;
         
         // 1. FORMS
-        html += `<div class="section-box section-forms">
-                  <div class="section-title">${t.sectForms}</div>
-                  <table class="table table-sm mb-0">
-                    <tr><td class="doc-name">Registration & Consent Forms</td><td class="text-end status-Submitted">${t.submitted}</td></tr>
-                  </table>
-                </div>`;
+        html += `<div class="section-box section-forms"><div class="section-title">${t.sectForms}</div><table class="table table-sm mb-0"><tr><td class="doc-name">Registration & Consent Forms</td><td class="text-end status-Submitted">${t.submitted}</td></tr></table></div>`;
 
         // 2. UPLOADS
         html += `<div class="section-box section-uploads"><div class="section-title">${t.sectUploads}</div><table class="table table-sm mb-0">`;
@@ -256,7 +297,7 @@
         if (missingDocs > 0) html += `<a href="https://www.surveymonkey.com/r/9GYMKBM" target="_blank" class="btn btn-warning btn-action w-100 mt-2 text-white">${t.btnUploads}</a>`;
         html += `</div>`;
 
-        // 3. TRANSPORTATION (Updated with Green Choices)
+        // 3. TRANSPORTATION
         if (s.program === "Discovery" && s.transportation) {
             const isUT = (s.transportation.location || "").toLowerCase().includes("uptown");
             const surveyUrl = isUT ? "https://www.surveymonkey.com/r/RRNN52J" : "https://www.surveymonkey.com/r/RSHRS9Q";
@@ -270,22 +311,10 @@
             html += `<div class="section-box section-transpo">
                       <div class="section-title">${t.sectTrans} (${isUT ? 'Uptown' : 'Downtown'})</div>
                       <table class="table table-sm mb-0">
-                        <tr>
-                          <td class="doc-name">${t.am}</td>
-                          <td class="${mIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">
-                            ${mIsMissing ? t.missing : mRaw}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="doc-name">${t.pm}</td>
-                          <td class="${aIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">
-                            ${aIsMissing ? t.missing : aRaw}
-                          </td>
-                        </tr>
+                        <tr><td class="doc-name">${t.am}</td><td class="${mIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">${mIsMissing ? t.missing : mRaw}</td></tr>
+                        <tr><td class="doc-name">${t.pm}</td><td class="${aIsMissing ? 'status-Missing' : 'status-Submitted'} text-end">${aIsMissing ? t.missing : aRaw}</td></tr>
                       </table>
-                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">
-                        ${transpoComplete ? t.change : t.complete}
-                      </a>
+                      <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${transpoComplete ? t.change : t.complete}</a>
                       <details class="transpo-guide">
                         <summary>${t.guideTitle}</summary>
                         <ul>${detailsList.map(item => `<li>${item}</li>`).join('')}</ul>
