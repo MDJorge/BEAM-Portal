@@ -184,6 +184,7 @@
 
     let currentLang = 'en';
     let currentResults = null;
+    let fallbackTimeout = null;
 
     function syncLang(el) {
       document.getElementById('langSelect').value = el.value;
@@ -230,25 +231,39 @@
       const btn = document.getElementById('btn');
       const errBox = document.getElementById('error');
       const t = TRANSLATIONS[currentLang];
+      
       if(!dob || !email) return;
+      
       btn.disabled = true;
       btn.innerText = t.btnSearching;
       errBox.classList.add('hidden');
+      
       const oldScript = document.getElementById('jsonp_loader');
       if(oldScript) oldScript.remove();
+      
       const script = document.createElement('script');
       script.id = 'jsonp_loader';
+      script.setAttribute('crossorigin', 'anonymous'); // CRITICAL FOR MULTI-ACCOUNT FIX
       script.src = `${SCRIPT_URL}?callback=receiveData&dob=${encodeURIComponent(dob)}&email=${encodeURIComponent(email)}`;
+      
       script.onerror = function() {
+        clearTimeout(fallbackTimeout);
         btn.disabled = false;
         btn.innerText = t.btnCheck;
         errBox.innerHTML = `<strong>${t.errorConn}</strong><br><button onclick="manualFallback()" class="btn btn-dark btn-sm fw-bold w-100 mt-2">${t.manualBtn}</button>`;
         errBox.classList.remove('hidden');
       };
+      
+      // Safety net timeout in case the request hangs silently
+      fallbackTimeout = setTimeout(() => {
+        if(btn.disabled) script.onerror();
+      }, 10000); 
+
       document.body.appendChild(script);
     }
 
     window.receiveData = function(results) {
+      clearTimeout(fallbackTimeout);
       const scriptTag = document.getElementById('jsonp_loader');
       if(scriptTag) scriptTag.remove(); 
       currentResults = results;
@@ -372,6 +387,7 @@
                         <tr><td class="doc-name">${t.pm}</td><td class="${pmClass} text-end">${pmVal === "Missing" ? t.missing : pmVal}</td></tr>
                       </table>
                       <a href="${surveyUrl}" target="_blank" class="btn btn-info btn-action w-100 mt-2 text-white" style="background-color: #0dcaf0; border: none;">${transComplete ? t.change : t.complete}</a>
+                      <div class="text-center mt-2 mb-1 fw-bold" style="font-size: 0.85rem; color: #dc3545;">* Changes will take 24 hours to show</div>
                       <details class="transpo-guide"><summary>${t.guideTitle}</summary><ul>${translateStops(stopList, t)}</ul></details>
                     </div>`;
         }
